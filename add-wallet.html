@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ওয়ালেট অ্যাড - Mart Express BD</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: sans-serif; background-color: #f3f4f6; padding: 20px; }
+        .page-card { background: white; padding: 20px; border-radius: 12px; }
+        .back-btn { display: inline-block; margin-bottom: 15px; color: #047857; font-weight: bold; text-decoration: none; }
+        input, select, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: #047857; color: white; font-weight: bold; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> হোমপেজে ফিরুন</a>
+    <div class="page-card">
+        <h2><i class="fa-solid fa-square-plus" style="color: #f59e0b;"></i> ওয়ালেটে টাকা যোগ করুন</h2>
+        <form onsubmit="event.preventDefault(); alert('অনুরোধ পাঠানো হয়েছে!');">
+            <select><option>bKash</option><option>Nagad</option><option>Rocket</option></select>
+            <input type="number" placeholder="টাকার পরিমাণ (৳)" required>
+            <input type="text" placeholder="TrxID (ট্রানজেকশন আইডি)" required>
+            <button type="submit">জমা দিন</button>
+        </form>
+    </div>
+</body>
+</html>

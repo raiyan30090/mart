@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>উইথড্র ও হিস্ট্রি - Mart Express BD</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="app.js" defer></script>
+    <style>
+        body { font-family: sans-serif; background-color: #f3f4f6; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .page-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .back-btn { display: inline-block; margin-bottom: 15px; color: #047857; font-weight: bold; text-decoration: none; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 5px; }
+        input, select, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; box-sizing: border-box; font-size: 14px; outline: none; }
+        input:focus, select:focus { border-color: #047857; }
+        .editable-input { background-color: #ffffff; color: #1f2937; font-weight: bold; }
+        button { background: #047857; color: white; font-weight: bold; border: none; cursor: pointer; margin-top: 10px; font-size: 16px; }
+        button:hover { background: #065f46; }
+        
+        /* History Table Styles */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; }
+        th { background: #f9fafb; color: #374151; }
+        
+        /* Status Badges */
+        .badge-waiting { background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-weight: bold; display: inline-block; }
+        .badge-pending { background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: bold; display: inline-block; }
+        .badge-ready { background: #fae8ff; color: #86198f; padding: 4px 8px; border-radius: 4px; font-weight: bold; display: inline-block; }
+        .badge-success { background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 4px; font-weight: bold; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> হোমপেজে ফিরুন</a>
+
+        <!-- Withdraw Form Card -->
+        <div class="page-card">
+            <h2><i class="fa-solid fa-hand-holding-dollar" style="color: #eab308;"></i> টাকা তুলুন (Withdraw)</h2>
+            <p style="font-size: 13px; color: #6b7280; margin-bottom: 20px;">আপনার অর্জিত কমিশন উত্তোলন করতে নিচের ফর্মটি পূরণ করুন:</p>
+
+            <form id="withdraw-form" onsubmit="handleWithdraw(event)">
+                <!-- Reseller ID Input Field -->
+                <div class="form-group">
+                    <label for="withdraw-reseller-id">রিসেলার আইডি (Reseller ID)</label>
+                    <input type="text" id="withdraw-reseller-id" class="editable-input" placeholder="MX-88402" required>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="form-group">
+                    <label for="payment-method">পেমেন্ট মেথড নির্বাচন করুন</label>
+                    <select id="payment-method" required>
+                        <option value="">মেথড সিলেক্ট করুন</option>
+                        <option value="bKash">bKash Personal</option>
+                        <option value="Nagad">Nagad Personal</option>
+                        <option value="Rocket">Rocket Personal</option>
+                        <option value="Upay">Upay Personal</option>
+                    </select>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group">
+                    <label for="account-number">অ্যাকাউন্ট নম্বর (মোবাইল নম্বর)</label>
+                    <input type="tel" id="account-number" placeholder="017XXXXXXXX" pattern="[0-9]{11}" required>
+                </div>
+
+                <!-- Amount -->
+                <div class="form-group">
+                    <label for="withdraw-amount">উইথড্র পরিমাণ (৳)</label>
+                    <input type="number" id="withdraw-amount" min="200" placeholder="সর্বনিম্ন ৳২০০" required>
+                </div>
+
+                <button type="submit"><i class="fa-solid fa-paper-plane"></i> রিকোয়েস্ট পাঠান</button>
+            </form>
+        </div>
+
+        <!-- Withdraw History Card -->
+        <div class="page-card">
+            <h3><i class="fa-solid fa-clock-rotate-left" style="color: #2563eb;"></i> উইথড্র হিস্ট্রি ও স্ট্যাটাস</h3>
+            <p style="font-size: 13px; color: #6b7280; margin-bottom: 10px;">আপনার পূর্ববর্তী উইথড্র রিকোয়েস্টসমূহের বর্তমান অবস্থা:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>তারিখ</th>
+                        <th>Reseller ID</th>
+                        <th>মেথড ও নম্বর</th>
+                        <th>পরিমাণ</th>
+                        <th>স্ট্যাটাস</th>
+                    </tr>
+                </thead>
+                <tbody id="withdraw-history-body">
+                    <!-- JavaScript দিয়ে ডায়নামিকভাবে ডাটা লোড হবে -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // পেজ লোড হলে Reseller ID এবং হিস্ট্রি লোড করা
+        document.addEventListener('DOMContentLoaded', () => {
+            const resellerInput = document.getElementById('withdraw-reseller-id');
+            if(resellerInput) {
+                resellerInput.value = typeof getOrCreateResellerID === 'function' ? getOrCreateResellerID() : 'MX-88402';
+            }
+            loadWithdrawHistory();
+        });
+
+        // নতুন উইথড্র সাবমিট করলে তারিখ ও সময়সহ সেভ হবে
+        function handleWithdraw(event) {
+            event.preventDefault();
+            const resellerId = document.getElementById('withdraw-reseller-id').value;
+            const method = document.getElementById('payment-method').value;
+            const number = document.getElementById('account-number').value;
+            const amount = document.getElementById('withdraw-amount').value;
+            
+            // তারিখ, ঘণ্টা, মিনিট ও সেকেন্ডসহ বর্তমান সময় বের করা
+            const now = new Date();
+            const date = now.toLocaleDateString('bn-BD');
+            const time = now.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const dateTimeFull = `${date}, ${time}`;
+
+            const newRequest = {
+                date: dateTimeFull, // তারিখ এবং সময় একসাথে
+                resellerid: resellerId,
+                method: method,
+                number: number,
+                amount: amount,
+                status: 'Waiting for Approved' 
+            };
+
+            let history = JSON.parse(localStorage.getItem('withdrawHistory')) || [];
+            history.unshift(newRequest); 
+            localStorage.setItem('withdrawHistory', JSON.stringify(history));
+
+            alert(`✅ উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!\n\nID: ${resellerId}\nপরিমাণ: ৳${amount}`);
+            
+            document.getElementById('withdraw-form').reset();
+            document.getElementById('withdraw-reseller-id').value = resellerId; 
+            loadWithdrawHistory();
+        }
+
+        // স্ট্যাটাস অনুযায়ী সুন্দর ব্যাজ দেখানোর ফাংশন
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'Waiting for Approved':
+                    return '<span class="badge-waiting">Waiting for Approved</span>';
+                case 'Pending':
+                    return '<span class="badge-pending">Pending</span>';
+                case 'Ready for Payment':
+                    return '<span class="badge-ready">Ready for Payment</span>';
+                case 'Payment Successful':
+                    return '<span class="badge-success">Payment Successful</span>';
+                default:
+                    return `<span class="badge-waiting">${status}</span>`;
+            }
+        }
+
+        // হিস্ট্রি টেবিল রেন্ডার করা
+        function loadWithdrawHistory() {
+            const tbody = document.getElementById('withdraw-history-body');
+            let history = JSON.parse(localStorage.getItem('withdrawHistory')) || [];
+
+            if (history.length === 0) {
+                history = [
+                    { date: '২৬/০৮/২০২৬, ১১:৩০:০০ AM', resellerid: 'MX-88402', method: 'bKash', number: '01716XXXXXX', amount: '৫০০', status: 'Payment Successful' }
+                ];
+            }
+
+            tbody.innerHTML = '';
+            history.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><i class="fa-regular fa-clock" style="color: #2563eb;"></i> ${item.date}</td>
+                        <td><b>${item.resellerid || 'MX-88402'}</b></td>
+                        <td>${item.method}<br><small style="color:#6b7280">${item.number}</small></td>
+                        <td><b>৳ ${item.amount}</b></td>
+                        <td>${getStatusBadge(item.status)}</td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

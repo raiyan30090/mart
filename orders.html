@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অর্ডার ও কুরিয়ার ট্র্যাকিং - Mart Express BD</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; padding: 20px; margin: 0; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .back-btn { display: inline-block; margin-bottom: 15px; color: #047857; font-weight: bold; text-decoration: none; font-size: 14px; }
+        .page-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h2 { margin-top: 0; color: #1f2937; font-size: 20px; border-bottom: 2px solid #f3f4f6; padding-bottom: 15px; }
+        
+        /* Table Styles */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { border: 1px solid #e5e7eb; padding: 12px; text-align: left; vertical-align: middle; }
+        th { background: #f9fafb; color: #374151; font-weight: bold; }
+        tr:hover { background-color: #f9fafb; }
+
+        /* Tracking Timeline Box */
+        .tracking-box { background: #fafafa; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-top: 5px; display: none; }
+        .timeline-item { position: relative; padding-left: 20px; margin-bottom: 10px; border-left: 2px solid #2563eb; }
+        .timeline-item::before { content: ''; position: absolute; left: -5px; top: 2px; width: 8px; height: 8px; background: #2563eb; border-radius: 50%; }
+        .timeline-time { font-size: 11px; color: #6b7280; font-weight: bold; }
+        .timeline-text { font-size: 13px; color: #1f2937; font-weight: 600; }
+
+        /* Track Button Style */
+        .btn-track { background: #2563eb; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; transition: background 0.2s; }
+        .btn-track:hover { background: #1d4ed8; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> হোমপেজে ফিরুন</a>
+
+        <div class="page-card">
+            <h2><i class="fa-solid fa-truck-fast" style="color: #2563eb;"></i> অর্ডার ও কুরিয়ার লাইভ ট্র্যাকিং আপডেট</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>তারিখ ও সময়</th>
+                        <th>অর্ডার & প্রোডাক্ট</th>
+                        <th>কাস্টমার</th>
+                        <th>রিসেলার আইডি</th>
+                        <th>ট্র্যাকিং আইডি</th>
+                        <th>অ্যাকশন / ট্র্যাকিং</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <!-- ডাটা ডায়নামিকভাবে লোড হবে -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOrders();
+        });
+
+        function loadOrders() {
+            const tbody = document.getElementById('orders-table-body');
+            
+            let orders = JSON.parse(localStorage.getItem('myOrders')) || [
+                {
+                    dateTime: '২৭/০৮/২০২৬, ১১:৪৫ PM',
+                    orderId: '#1024',
+                    productName: 'স্মার্টফোন Z1',
+                    customerName: 'রহিম উদ্দিন',
+                    resellerId: 'MX-88402',
+                    trackingNo: '288638029',
+                    status: 'Processing'
+                }
+            ];
+
+            tbody.innerHTML = '';
+            orders.forEach((item, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><i class="fa-regular fa-clock" style="color: #2563eb;"></i> ${item.dateTime}</td>
+                        <td><b>${item.orderId}</b><br><small style="color: #6b7280;">${item.productName}</small></td>
+                        <td><b>${item.customerName}</b></td>
+                        <td><span style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 12px;">${item.resellerId}</span></td>
+                        <td><code style="background: #f3f4f6; padding: 4px 8px; border-radius: 4px; color: #d97706; font-weight: bold;">${item.trackingNo}</code></td>
+                        <td>
+                            <button class="btn-track" onclick="toggleTracking(${index})">
+                                <i class="fa-solid fa-location-dot"></i> অর্ডার ট্র্যাক করুন
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="padding: 0; border: none;">
+                            <div id="tracking-box-${index}" class="tracking-box">
+                                <div style="font-weight: bold; color: #374151; font-size: 13px; margin-bottom: 10px;">
+                                    <i class="fa-solid fa-route" style="color: #2563eb;"></i> কুরিয়ার লাইভ আপডেট (Consignment: ${item.trackingNo})
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-time">Aug 27, 2026, 10:00 pm</div>
+                                    <div class="timeline-text">Assigned to rider. (MD: Tariful Islam - 01603383059)</div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-time">Aug 27, 2026, 09:17 pm</div>
+                                    <div class="timeline-text">Consignment has been received at BIJOYNAGAR (B BARIA).</div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-time">Aug 27, 2026, 01:28 pm</div>
+                                    <div class="timeline-text">Consignment sent to BIJOYNAGAR (B BARIA). Dispatch ID: 18841854</div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // "অর্ডার ট্র্যাক করুন" বাটনে ক্লিক করলে ট্র্যাকিং বক্স টগল হওয়ার ফাংশন
+        function toggleTracking(index) {
+            const box = document.getElementById(`tracking-box-${index}`);
+            if (box.style.display === 'block') {
+                box.style.display = 'none';
+            } else {
+                box.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
