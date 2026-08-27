@@ -1,0 +1,15 @@
+{
+  "name": "mart-express-bd",
+  "version": "1.0.0",
+  "description": "Mart Express BD Full Architecture",
+  "main": "backend/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node backend/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.0"
+  }
+}

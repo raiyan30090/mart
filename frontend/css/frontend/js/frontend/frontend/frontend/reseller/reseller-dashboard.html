@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>Reseller Dashboard - Mart Express BD</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <h2>👨‍💻 Reseller Panel</h2>
+    <div>
+      <a href="../index.html">Shop</a>
+      <a href="./reseller-add-balance.html">Add Balance</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h3 id="resellerWelcome">Welcome, Reseller</h3>
+      <p id="resellerIdDisplay" style="color:#777; margin-top:5px;"></p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">Available Balance</div>
+        <div class="card-value">৳0.00</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Total Earned</div>
+        <div class="card-value">৳0.00</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('user'));
+    if(user) {
+      document.getElementById('resellerWelcome').innerText = `Welcome, ${user.name}`;
+      document.getElementById('resellerIdDisplay').innerText = `ID: ${user.resellerId}`;
+    }
+  </script>
+</body>
+</html>
