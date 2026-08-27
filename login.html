@@ -1,55 +1,134 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <title>Login / Register - Mart Express BD</title>
-  <link rel="stylesheet" href="./css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Mart Express BD</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="app.js" defer></script>
+    <style>
+        body {
+            background-color: #f3f4f6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .login-header i {
+            font-size: 40px;
+            color: #047857;
+            margin-bottom: 8px;
+        }
+        .login-header h2 {
+            font-size: 22px;
+            color: #111827;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #374151;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus {
+            border-color: #047857;
+        }
+        .btn-submit {
+            width: 100%;
+            background-color: #047857;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover {
+            background-color: #065f46;
+        }
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .login-footer a {
+            color: #047857;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
 
-  <nav class="navbar">
-    <h2>🛒 Mart Express BD</h2>
-    <a href="./index.html">Home</a>
-  </nav>
+    <div class="login-card">
+        <div class="login-header">
+            <i class="fa-solid fa-bolt"></i>
+            <h2>Mart Express BD</h2>
+            <p style="font-size: 13px; color: #6b7280;">আপনার অ্যাকাউন্ট সিলেক্ট করে লগইন করুন</p>
+        </div>
 
-  <div class="container">
-    <div class="card" style="max-width: 450px; margin: 0 auto;">
-      <h3>👨‍💻 Account Registration</h3>
-      <form id="regForm" style="margin-top:15px;">
-        <label>Name</label>
-        <input type="text" id="regName" required>
-        <label>Phone Number</label>
-        <input type="text" id="regPhone" required>
-        <label>Password</label>
-        <input type="password" id="regPassword" required>
-        <label>Role</label>
-        <select id="regRole">
-          <option value="CUSTOMER">Customer</option>
-          <option value="RESELLER">Reseller</option>
-        </select>
-        <button type="submit" class="btn" style="margin-top:15px; width:100%;">Register</button>
-      </form>
+        <form id="login-form">
+            <!-- Account Type Selection -->
+            <div class="form-group">
+                <label for="user-role">অ্যাকাউন্টের ধরন</label>
+                <select id="user-role" class="form-control" required>
+                    <option value="reseller">Reseller Dashboard</option>
+                    <option value="admin">Admin Dashboard</option>
+                    <option value="customer">Customer Home</option>
+                </select>
+            </div>
+
+            <!-- Username or Phone -->
+            <div class="form-group">
+                <label for="username">মোবাইল নম্বর অথবা ইউজারনেম</label>
+                <input type="text" id="username" class="form-control" placeholder="017XXXXXXXX" required>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">পাসওয়ার্ড</label>
+                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit">Login</button>
+        </form>
+
+        <div class="login-footer">
+            নতুন অ্যাকাউন্ট করতে চান? <a href="register.html">রেজিস্ট্রেশন করুন</a>
+        </div>
     </div>
-  </div>
 
-  <script src="./js/app.js"></script>
-  <script>
-    document.getElementById('regForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const payload = {
-        name: document.getElementById('regName').value,
-        phone: document.getElementById('regPhone').value,
-        password: document.getElementById('regPassword').value,
-        role: document.getElementById('regRole').value
-      };
-      
-      const res = await apiCall('/api/auth/register', 'POST', payload);
-      alert(res.message);
-      if(res.success && res.data.role === 'RESELLER') {
-        localStorage.setItem('user', JSON.stringify(res.data));
-        window.location.href = './reseller/reseller-dashboard.html';
-      }
-    });
-  </script>
 </body>
 </html>

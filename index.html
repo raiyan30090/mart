@@ -5,27 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mart Express BD - Reseller Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="app.js" defer></script>
 </head>
 <body>
 
     <!-- Top App Navigation Bar -->
     <header class="top-nav">
         <div class="top-left">
-            <i class="fa-solid fa-bars menu-icon"></i>
+            <i class="fa-solid fa-bars menu-icon" onclick="openFeature('মেনু')"></i>
             <div class="brand-logo">
                 <i class="fa-solid fa-bolt" style="color: #facc15;"></i>
                 Mart Express BD
             </div>
         </div>
-        <button class="balance-btn">
-            ৳ ব্যালেন্স দেখুন <i class="fa-regular fa-eye"></i>
+        <!-- Balance Button with Toggle functionality -->
+        <button class="balance-btn" onclick="toggleBalance()">
+            <span id="balance-text">৳ ব্যালেন্স দেখুন</span> <i class="fa-regular fa-eye"></i>
         </button>
-        <i class="fa-regular fa-bell notif-icon"></i>
+        <i class="fa-regular fa-bell notif-icon" onclick="openFeature('নোটিফিকেশন')"></i>
     </header>
 
-    <!-- Promotional Banner -->
+    <!-- Banner -->
     <div class="banner-container">
         <div class="banner-card">
             <img src="https://img.freepik.com/free-vector/horizontal-banner-template-online-shopping-world-shopping-day_23-2149721471.jpg" alt="Banner">
@@ -38,121 +39,83 @@
             <span class="section-title">আমাদের সোশ্যাল মিডিয়া</span>
         </div>
         <div class="social-grid">
-            <a href="#" class="social-item">
+            <a href="https://facebook.com" target="_blank" class="social-item">
                 <div class="social-icon fb"><i class="fa-brands fa-facebook-f"></i></div>
                 Facebook
             </a>
-            <a href="#" class="social-item">
+            <a href="https://wa.me/" target="_blank" class="social-item">
                 <div class="social-icon wa"><i class="fa-brands fa-whatsapp"></i></div>
                 WhatsApp
             </a>
-            <a href="#" class="social-item">
+            <a href="#" onclick="openFeature('Messenger')" class="social-item">
                 <div class="social-icon msg"><i class="fa-brands fa-facebook-messenger"></i></div>
                 Messenger
             </a>
-            <a href="#" class="social-item">
+            <a href="#" onclick="openFeature('TikTok')" class="social-item">
                 <div class="social-icon tk"><i class="fa-brands fa-tiktok"></i></div>
                 TikTok
             </a>
         </div>
     </div>
 
-    <!-- Dashboard Main Projects/Features -->
+    <!-- Feature Grid with Click Actions -->
     <div class="section-box">
         <div class="section-header">
             <span class="section-title">আমাদের প্রজেক্ট</span>
         </div>
         <div class="feature-grid">
-            <a href="#" class="feature-item">
+            <a href="#" onclick="openFeature('সকল প্রোডাক্ট')" class="feature-item">
                 <div class="feature-box bg-green"><i class="fa-solid fa-box-open"></i></div>
                 সকল প্রোডাক্ট
             </a>
-            <a href="#" class="feature-item">
+            <a href="#" onclick="openFeature('ফেভারিট')" class="feature-item">
                 <div class="feature-box bg-pink"><i class="fa-regular fa-heart"></i></div>
                 ফেভারিট
             </a>
-            <a href="#" class="feature-item">
+            <a href="#" onclick="openFeature('ব্যালেন্স স্টেটমেন্ট')" class="feature-item">
                 <div class="feature-box bg-purple"><i class="fa-solid fa-file-invoice-dollar"></i></div>
                 ব্যালেন্স স্টেটমেন্ট
             </a>
-            <a href="#" class="feature-item">
+            <a href="#" onclick="openFeature('সেলস ওভারভিউ')" class="feature-item">
                 <div class="feature-box bg-blue"><i class="fa-solid fa-chart-line"></i></div>
                 সেলস ওভারভিউ
             </a>
-            <a href="#" class="feature-item">
+            <a href="#" onclick="openFeature('ওয়ালেট')" class="feature-item">
                 <div class="feature-box bg-teal"><i class="fa-solid fa-wallet"></i></div>
                 ওয়ালেট
             </a>
-            <a href="#" class="feature-item">
+            <a href="#" onclick="openFeature('ওয়ালেট অ্যাড')" class="feature-item">
                 <div class="feature-box bg-amber"><i class="fa-solid fa-square-plus"></i></div>
                 ওয়ালেট অ্যাড
             </a>
-            <a href="#" class="feature-item">
+            <a href="#" onclick="openFeature('অর্ডার লিস্ট')" class="feature-item">
                 <div class="feature-box bg-indigo"><i class="fa-solid fa-clipboard-list"></i></div>
                 অর্ডার লিস্ট
             </a>
-            <a href="#" class="feature-item">
+            <a href="#" onclick="openFeature('উইথড্র')" class="feature-item">
                 <div class="feature-box bg-yellow"><i class="fa-solid fa-hand-holding-dollar"></i></div>
                 উইথড্র
             </a>
         </div>
     </div>
 
-    <!-- Notice Announcement -->
+    <!-- Notice Bar -->
     <div class="notice-bar">
         <i class="fa-solid fa-bullhorn"></i>
         <span>অর্ডারে সরাসরি কমিশন পাবেন — আজই প্রোডাক্ট শেয়ার করুন!</span>
     </div>
 
-    <!-- New Updates Product Slider -->
-    <div class="section-box" style="background: transparent; padding: 0; box-shadow: none;">
-        <div class="section-header">
-            <span class="section-title">নতুন আপডেট</span>
-            <a href="#" class="see-all">সব দেখুন</a>
-        </div>
-        <div class="product-scroll">
-            <a href="checkout.html" class="product-card" style="text-decoration:none;">
-                <div class="product-img">📱</div>
-                <div class="product-info">
-                    <div class="product-name">স্মার্টফোন Z1</div>
-                    <div class="product-price">৳ 14,800</div>
-                </div>
-            </a>
-            <a href="checkout.html" class="product-card" style="text-decoration:none;">
-                <div class="product-img">⌚</div>
-                <div class="product-info">
-                    <div class="product-name">স্মার্টওয়াচ আল্ট্রা</div>
-                    <div class="product-price">৳ 1,250</div>
-                </div>
-            </a>
-            <a href="checkout.html" class="product-card" style="text-decoration:none;">
-                <div class="product-img">🎧</div>
-                <div class="product-info">
-                    <div class="product-name">ওয়্যারলেস ইয়ারবাড</div>
-                    <div class="product-price">৳ 850</div>
-                </div>
-            </a>
-            <a href="checkout.html" class="product-card" style="text-decoration:none;">
-                <div class="product-img">👚</div>
-                <div class="product-info">
-                    <div class="product-name">লাউঞ্জ ওয়্যার সেট</div>
-                    <div class="product-price">৳ 950</div>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    <!-- Bottom Mobile Menu -->
+    <!-- Bottom Navigation Bar -->
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-item active">
             <i class="fa-solid fa-house bottom-icon"></i>
             হোম
         </a>
-        <a href="#" class="bottom-item">
+        <a href="#" onclick="openFeature('সার্চ')" class="bottom-item">
             <i class="fa-solid fa-magnifying-glass bottom-icon"></i>
             সার্চ
         </a>
-        <a href="#" class="bottom-item">
+        <a href="#" onclick="openFeature('শপ')" class="bottom-item">
             <i class="fa-solid fa-store bottom-icon"></i>
             শপ
         </a>
