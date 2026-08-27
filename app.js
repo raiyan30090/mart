@@ -106,3 +106,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// --- পাসওয়ার্ড রিসেট হ্যান্ডলার ---
+    const forgotForm = document.getElementById('forgot-form');
+    if (forgotForm) {
+        forgotForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('reset-email').value;
+            const newPassword = document.getElementById('new-password').value;
+
+            let users = JSON.parse(localStorage.getItem('martUsers')) || [];
+
+            // ইউজার খুঁজে বের করা
+            let userIndex = users.findIndex(u => u.email === email);
+
+            if (userIndex !== -1) {
+                // নতুন পাসওয়ার্ড আপডেট করা
+                users[userIndex].password = newPassword;
+                localStorage.setItem('martUsers', JSON.stringify(users));
+
+                alert('✅ পাসওয়ার্ড সফলভাবে আপডেট হয়েছে! এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।');
+                window.location.href = 'login.html';
+            } else {
+                alert('❌ এই ইমেইল বা নম্বর দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি!');
+            }
+        });
+    }
