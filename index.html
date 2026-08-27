@@ -2,38 +2,79 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>Mart Express BD - Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mart Express BD - Official Store</title>
     <link rel="stylesheet" href="style.css">
     <script src="app.js"></script>
 </head>
 <body>
 
+    <!-- Header / Navbar with Logo -->
     <nav class="navbar">
-        <h2>🛒 Mart Express BD</h2>
-        <div>
+        <a href="index.html" class="logo-container">
+            <div class="logo-icon">M</div>
+            <div class="logo-text">Mart Express <span>BD</span></div>
+        </a>
+        <div class="nav-links">
             <a href="index.html">Home</a>
-            <a href="login.html">Login</a>
             <a href="register.html">Register</a>
             <a href="reseller-dashboard.html">Reseller Panel</a>
             <a href="dashboard.html">Admin Panel</a>
+            <a href="login.html" class="btn-login">Login</a>
         </div>
     </nav>
 
-    <div class="container">
-        <h2>🔥 Products Catalog</h2>
-        <div class="grid" style="margin-top:20px;">
-            <div class="card">
-                <h3>Smart Watch Ultra</h3>
-                <p style="color:var(--primary); font-weight:bold; margin:10px 0;">Tk 1,250</p>
-                <button class="btn" onclick="alert('Order placed successfully!')">Buy Now</button>
+    <!-- Banner Section -->
+    <section class="hero">
+        <h1>Welcome to Mart Express BD</h1>
+        <p>সেরা মূল্যে আকর্ষণীয় গ্যাজেট ও নিত্যপ্রয়োজনীয় প্রোডাক্ট অর্ডার করুন</p>
+    </section>
+
+    <!-- Product Showcase -->
+    <main class="container">
+        <h2 class="section-title">🔥 Featured Products</h2>
+        
+        <div class="product-grid">
+            <!-- Product Item 1 -->
+            <div class="product-card">
+                <div class="product-img">⌚</div>
+                <div class="product-info">
+                    <h3 class="product-title">Smart Watch Ultra</h3>
+                    <div class="product-price">৳1,250</div>
+                    <!-- Link to checkout.html -->
+                    <a href="checkout.html" style="text-decoration: none; display: block;">
+                        <button class="btn-buy">Buy Now</button>
+                    </a>
+                </div>
             </div>
-            <div class="card">
-                <h3>Wireless Earbuds</h3>
-                <p style="color:var(--primary); font-weight:bold; margin:10px 0;">Tk 850</p>
-                <button class="btn" onclick="alert('Order placed successfully!')">Buy Now</button>
+
+            <!-- Product Item 2 -->
+            <div class="product-card">
+                <div class="product-img">🎧</div>
+                <div class="product-info">
+                    <h3 class="product-title">Wireless Earbuds Pro</h3>
+                    <div class="product-price">৳850</div>
+                    <!-- Link to checkout.html -->
+                    <a href="checkout.html" style="text-decoration: none; display: block;">
+                        <button class="btn-buy">Buy Now</button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Product Item 3 -->
+            <div class="product-card">
+                <div class="product-img">🔌</div>
+                <div class="product-info">
+                    <h3 class="product-title">Fast Charging Powerbank</h3>
+                    <div class="product-price">৳1,500</div>
+                    <!-- Link to checkout.html -->
+                    <a href="checkout.html" style="text-decoration: none; display: block;">
+                        <button class="btn-buy">Buy Now</button>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
 </body>
 </html>
