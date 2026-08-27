@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mart Express BD - অ্যাডমিন ড্যাশবোর্ড</title>
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: var(--bg-body); color: var(--text-main); display: flex; }
+        
+        /* সাইডবার ডিজাইন */
+        .sidebar { width: 250px; background: var(--card-bg); height: 100vh; position: fixed; border-right: 1px solid var(--border-color); overflow-y: auto; z-index: 100; }
+        .sidebar-brand { padding: 20px; font-size: 20px; font-weight: bold; color: var(--primary-color); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); }
+        .sidebar-menu { list-style: none; padding: 15px 10px; margin: 0; }
+        .sidebar-menu li { margin-bottom: 5px; }
+        .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 10px 14px; color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s; }
+        .sidebar-menu a:hover, .sidebar-menu a.active { background: #ede9fe; color: var(--primary-color); }
+
+        /* মূল কন্টেন্ট এরিয়া */
+        .main-content { margin-left: 250px; padding: 20px 30px; width: calc(100% - 250px); min-height: 100vh; box-sizing: border-box; }
+        .header-top { background: #0b6623; color: white; padding: 15px 25px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        
+        /* স্ট্যাটিস্টিক্স কার্ড */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); border-left: 5px solid #0b6623; }
+        .stat-card h3 { margin: 0 0 10px 0; font-size: 14px; color: var(--text-muted); }
+        .stat-card .number { font-size: 24px; font-weight: bold; color: var(--text-main); }
+
+        /* সেকশন হ্যান্ডলিং */
+        .section-box { display: none; background: var(--card-bg); padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; }
+        .section-box.active { display: block; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        th { background: #f8fafc; color: var(--text-muted); font-weight: 600; }
+
+        /* ফর্ম এবং গ্রিড ডিজাইন */
+        .form-container-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media(max-width: 900px) { .form-container-grid { grid-template-columns: 1fr; } }
+
+        .form-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .form-card h3 { margin-top: 0; font-size: 16px; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+        .form-group label span { color: #ef4444; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; box-sizing: border-box; outline: none; }
+        .form-control:focus { border-color: var(--primary-color); }
+        
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn-save { background: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .btn-save:hover { background: #4338ca; }
+        .top-action-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <!-- সাইডবার মেনু -->
+    <div class="sidebar">
+        <div class="sidebar-brand"><i class="fa-solid fa-bolt"></i> Mart Express</div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active" onclick="switchTab(event, 'dashboardSection')"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="#" onclick="switchTab(event, 'ordersSection')"><i class="fa-solid fa-bag-shopping"></i> Orders</a></li>
+            <li><a href="#" onclick="switchTab(event, 'customersSection')"><i class="fa-solid fa-address-book"></i> Customer List</a></li>
+            <li><a href="#" onclick="switchTab(event, 'productsSection')"><i class="fa-solid fa-boxes-stacked"></i> Products</a></li>
+            <li><a href="#" onclick="switchTab(event, 'categoriesSection')"><i class="fa-solid fa-layer-group"></i> Categories</a></li>
+            <li><a href="#" onclick="switchTab(event, 'resellersSection')"><i class="fa-solid fa-users"></i> Resellers List</a></li>
+            <li><a href="#" onclick="switchTab(event, 'balanceSection')"><i class="fa-solid fa-wallet"></i> Reseller Balance</a></li>
+            <li><a href="index.html"><i class="fa-solid fa-store"></i> Visit Storefront</a></li>
+        </ul>
+    </div>
+
+    <!-- মূল পেজ কন্টেন্ট -->
+    <div class="main-content">
+        <div class="header-top">
+            <h2 style="margin:0;">Mart Express BD - অ্যাডমিন ড্যাশবোর্ড</h2>
+            <a href="index.html" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 6px 15px; border-radius: 5px;"><i class="fa-solid fa-house"></i> হোমপেজে যান</a>
+        </div>
+
+        <!-- ড্যাশবোর্ড ওভারভিউ সেকশন -->
+        <div id="dashboardSection" class="section-box active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>মোট অর্ডার</h3>
+                    <div class="number" id="totalOrdersCount">0</div>
+                </div>
+                <div class="stat-card" style="border-left-color: #3b82f6;">
+                    <h3>মোট কাস্টমার</h3>
+                    <div class="number" id="totalCustomersCount">0</div>
+                </div>
+                <div class="stat-card" style="border-left-color: #10b981;">
+                    <h3>মোট রেজিস্টার্ড রিসেলার</h3>
+                    <div class="number" id="totalResellersCount">0</div>
+                </div>
+                <div class="stat-card" style="border-left-color: #e67e22;">
+                    <h3>মোট প্রোডাক্ট সংখ্যা</h3>
+                    <div class="number" id="totalProductsCount">0</div>
+                </div>
+            </div>
+            <h3>স্বাগতম, অ্যাডমিন!</h3>
+            <p>আপনার ড্যাশবোর্ড সফলভাবে কনফিগার করা হয়েছে।</p>
+        </div>
+
+        <!-- অর্ডার সেকশন -->
+        <div id="ordersSection" class="section-box">
+            <h3>কাস্টমার ও অর্ডার লিস্ট</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>তারিখ ও সময়</th>
+                        <th>রিসেলার আইডি</th>
+                        <th>কাস্টমার বিবরণ</th>
+                        <th>ছবি</th>
+                        <th>পণ্য (নাম / কোড)</th>
+                        <th>মূল্য</th>
+                        <th>স্ট্যাটাস</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <tr>
+                        <td colspan="8" style="text-align: center; color: var(--text-muted);">কোনো অর্ডার পাওয়া যায়নি।</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- কাস্টমার লিস্ট সেকশন (রিসেলার লিস্টের স্টাইলে সাজানো) -->
+        <div id="customersSection" class="section-box">
+            <h3>রেজিস্টার্ড কাস্টমারগণের তালিকা</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>রেজিস্ট্রেশনের সময়</th>
+                        <th>কাস্টমার নাম</th>
+                        <th>মোবাইল নম্বর</th>
+                        <th>ঠিকানা ও বিবরণ</th>
+                        <th>সর্বশেষ অর্ডারের তথ্য</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="customersTableBody">
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-muted);">কোনো কাস্টমার পাওয়া যায়নি।</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- রেজিস্টার্ড রিসেলার লিস্ট সেকশন -->
+        <div id="resellersSection" class="section-box">
+            <h3>রেজিস্টার্ড রিসেলারগণের তালিকা</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>রেজিস্ট্রেশনের সময়</th>
+                        <th>রিসেলার নাম ও আইডি</th>
+                        <th>মোবাইল নম্বর</th>
+                        <th>পাসওয়ার্ড</th>
+                        <th>ঠিকানা ও NID তথ্য</th>
+                        <th>পেমেন্ট তথ্য</th>
+                        <th>অ্যাকাউন্ট স্ট্যাটাস</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="resellersTableBody">
+                    <tr>
+                        <td colspan="8" style="text-align: center; color: var(--text-muted);">কোনো রিসেলার রেজিস্ট্রেশন করেনি।</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- প্রোডাক্ট সেকশন -->
+        <div id="productsSection" class="section-box">
+            <div class="top-action-bar">
+                <h3 style="margin:0;">Add Product</h3>
+                <div>
+                    <button type="button" class="form-control" style="width: auto; display: inline-block; background: #fff; cursor: pointer;">Discard</button>
+                    <button type="button" class="btn-save" onclick="saveProductData()" style="margin-left: 10px;">Save</button>
+                </div>
+            </div>
+
+            <form id="addProductForm">
+                <div class="form-container-grid">
+                    <div>
+                        <div class="form-card">
+                            <h3>General Information</h3>
+                            <div class="form-group">
+                                <label>Item Name <span>*</span></label>
+                                <input type="text" class="form-control" id="itemName" placeholder="Item Name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Short Description</label>
+                                <textarea class="form-control" id="itemShortDesc" placeholder="Short Description" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Product Description</label>
+                                <textarea class="form-control" id="itemDesc" placeholder="Write something..." rows="4"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-card">
+                            <h3>Media (Image URL)</h3>
+                            <div class="form-group">
+                                <label>Product Image Link</label>
+                                <input type="text" class="form-control" id="itemImage" placeholder="Image URL">
+                            </div>
+                        </div>
+
+                        <div class="form-card">
+                            <h3>Pricing</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Sell/Current Price <span>*</span></label>
+                                    <input type="number" class="form-control" id="itemSellPrice" placeholder="Sell Price" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Regular/Old Price</label>
+                                    <input type="number" class="form-control" id="itemOldPrice" placeholder="Old Price">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="form-card">
+                            <h3>Category</h3>
+                            <div class="form-group">
+                                <label>Select Category</label>
+                                <select class="form-control" id="itemCategory">
+                                    <option value="">-- Select Category --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-card">
+                            <h3>Product Status</h3>
+                            <select class="form-control" id="itemStatus">
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="INACTIVE">INACTIVE</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- ক্যাটাগরি ম্যানেজমেন্ট সেকশন -->
+        <div id="categoriesSection" class="section-box">
+            <h3>Category Management</h3>
+            <div class="form-card" style="margin-top: 15px;">
+                <div class="form-group">
+                    <label>New Category Name <span>*</span></label>
+                    <input type="text" class="form-control" id="newCategoryName" placeholder="Enter category name">
+                </div>
+                <button type="button" class="btn-save" onclick="addNewCategory()">Add Category</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Category Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="categoryTableBody">
+                    <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">কোনো ক্যাটাগরি নেই।</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- রিসেলার ব্যালেন্স ম্যানেজমেন্ট সেকশন -->
+        <div id="balanceSection" class="section-box">
+            <h3>রিসেলার ব্যালেন্স ম্যানেজমেন্ট</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>রিসেলার আইডি / মোবাইল</th>
+                        <th>রিসেলার নাম</th>
+                        <th>বর্তমান ব্যালেন্স</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="resellerTableBody">
+                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">কোনো রিসেলার নেই।</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- জাভাস্ক্রিপ্ট স্ক্রিপ্টসমূহ -->
+    <script>
+        window.onload = function() {
+            loadCategories();
+            loadResellers();
+            loadResellersTable();
+            loadOrders();
+            loadCustomers();
+            updateDashboardCounts();
+
+            // প্রতি ৩ সেকেন্ড পর পর ডাটা সিঙ্ক করার জন্য
+            setInterval(function() {
+                loadOrders();
+                loadCustomers();
+                updateDashboardCounts();
+            }, 3000);
+        };
+
+        function switchTab(event, targetId) {
+            event.preventDefault();
+            let links = document.querySelectorAll('.sidebar-menu a');
+            links.forEach(link => link.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            let sections = document.querySelectorAll('.section-box');
+            sections.forEach(section => section.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+        }
+
+        // ড্যাশবোর্ড কাউন্ট আপডেট করার ফাংশন
+        function updateDashboardCounts() {
+            let orders = JSON.parse(localStorage.getItem('storeOrders')) || 
+                         JSON.parse(localStorage.getItem('orders')) || 
+                         JSON.parse(localStorage.getItem('customerOrders')) || 
+                         JSON.parse(localStorage.getItem('cartOrders')) || [];
+            document.getElementById('totalOrdersCount').innerText = orders.length;
+
+            let regResellers = JSON.parse(localStorage.getItem('registeredResellers')) || [];
+            document.getElementById('totalResellersCount').innerText = regResellers.length;
+
+            let products = JSON.parse(localStorage.getItem('storeProducts')) || [];
+            document.getElementById('totalProductsCount').innerText = products.length;
+        }
+
+        // ক্যাটাগরি ফাংশনসমূহ
+        function addNewCategory() {
+            let catName = document.getElementById('newCategoryName').value.trim();
+            if(!catName) { alert('দয়া করে ক্যাটাগরি নাম লিখুন!'); return; }
+            let categories = JSON.parse(localStorage.getItem('storeCategories')) || [];
+            categories.push(catName);
+            localStorage.setItem('storeCategories', JSON.stringify(categories));
+            document.getElementById('newCategoryName').value = '';
+            loadCategories();
+            alert('ক্যাটাগরি সফলভাবে যোগ করা হয়েছে!');
+        }
+
+        function loadCategories() {
+            let categories = JSON.parse(localStorage.getItem('storeCategories')) || [];
+            let catTableBody = document.getElementById('categoryTableBody');
+            let itemCategorySelect = document.getElementById('itemCategory');
+
+            if(categories.length === 0) {
+                catTableBody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">কোনো ক্যাটাগরি নেই।</td></tr>`;
+            } else {
+                catTableBody.innerHTML = '';
+                categories.forEach((cat, index) => {
+                    catTableBody.innerHTML += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${cat}</td>
+                            <td><button onclick="deleteCategory(${index})" style="background:#ef4444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Delete</button></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            itemCategorySelect.innerHTML = `<option value="">-- Select Category --</option>`;
+            categories.forEach(cat => {
+                itemCategorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+        }
+
+        function deleteCategory(index) {
+            let categories = JSON.parse(localStorage.getItem('storeCategories')) || [];
+            categories.splice(index, 1);
+            localStorage.setItem('storeCategories', JSON.stringify(categories));
+            loadCategories();
+        }
+
+        // প্রোডাক্ট সেভ করার ফাংশন
+        function saveProductData() {
+            let name = document.getElementById('itemName').value.trim();
+            let sellPrice = document.getElementById('itemSellPrice').value.trim();
+            if(!name || !sellPrice) { alert('দয়া করে প্রোডাক্টের নাম এবং বিক্রয়মূল্য দিন!'); return; }
+
+            let product = {
+                name: name,
+                shortDesc: document.getElementById('itemShortDesc').value,
+                desc: document.getElementById('itemDesc').value,
+                image: document.getElementById('itemImage').value,
+                sellPrice: sellPrice,
+                oldPrice: document.getElementById('itemOldPrice').value,
+                category: document.getElementById('itemCategory').value,
+                status: document.getElementById('itemStatus').value
+            };
+
+            let products = JSON.parse(localStorage.getItem('storeProducts')) || [];
+            products.push(product);
+            localStorage.setItem('storeProducts', JSON.stringify(products));
+            document.getElementById('addProductForm').reset();
+            updateDashboardCounts();
+            alert('প্রোডাক্ট সফলভাবে সংরক্ষণ করা হয়েছে!');
+        }
+
+        // রেজিস্টার্ড রিসেলার টেবিল লোড
+        function loadResellersTable() {
+            let regResellers = JSON.parse(localStorage.getItem('registeredResellers')) || [];
+            let tableBody = document.getElementById('resellersTableBody');
+            if(!tableBody) return;
+            tableBody.innerHTML = '';
+
+            if(regResellers.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">কোনো রিসেলার রেজিস্ট্রেশন করেনি।</td></tr>`;
+                document.getElementById('totalResellersCount').innerText = 0;
+                return;
+            }
+
+            regResellers.forEach((reseller, index) => {
+                let row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${reseller.dateTime || 'N/A'}</td>
+                    <td>
+                        <strong>${reseller.name}</strong><br>
+                        <small style="color: #0b6623; font-weight: bold;">আইডি: ${reseller.resellerId || 'MEBD-00' + (index+1)}</small>
+                    </td>
+                    <td>${reseller.phone || reseller.mobile || 'N/A'}</td>
+                    <td>
+                        <span id="passSpan_${index}">${reseller.password}</span>
+                        <button onclick="adminResetResellerPassword('${reseller.phone || reseller.mobile}')" style="background: none; border: none; color: #3b82f6; cursor: pointer; margin-left: 5px;" title="পাসওয়ার্ড পরিবর্তন করুন">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </td>
+                    <td>
+                        ঠিকানা: ${reseller.address || 'N/A'}<br>
+                        NID নং: ${reseller.nidNum || 'N/A'}<br>
+                        ${reseller.nidPic ? `<a href="${reseller.nidPic}" target="_blank" style="color: #8b5cf6; font-weight: bold; text-decoration: underline;">NID ছবি দেখুন</a>` : ''}
+                    </td>
+                    <td>
+                        মাধ্যম: <b>${reseller.payMethod || 'N/A'}</b><br>
+                        প্রেরক নং: ${reseller.senderNo || 'N/A'}<br>
+                        TrxID: <span style="color: #d97706; font-weight: bold;">${reseller.trxId || 'N/A'}</span><br>
+                        পেমেন্ট স্ট্যাটাস: 
+                        <select onchange="updatePaymentStatus(${index}, this.value)" style="padding: 2px; font-size: 12px; font-weight: bold; border-radius: 4px; margin-top: 3px;">
+                            <option value="Pending" ${reseller.subscriptionStatus === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="Paid" ${reseller.subscriptionStatus === 'Paid' ? 'selected' : ''}>Paid</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select onchange="updateAccountStatus(${index}, this.value)" style="padding: 5px; font-weight: bold; border-radius: 4px; background: ${reseller.accountStatus === 'Approved' ? '#dcfce7' : '#fee2e2'}; color: ${reseller.accountStatus === 'Approved' ? '#166534' : '#991b1b'};">
+                            <option value="Pending" ${reseller.accountStatus !== 'Approved' ? 'selected' : ''}>Pending</option>
+                            <option value="Approved" ${reseller.accountStatus === 'Approved' ? 'selected' : ''}>Approved</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button onclick="deleteReseller(${index})" style="background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">
+                            <i class="fa-solid fa-trash"></i> ডিলিট
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            document.getElementById('totalResellersCount').innerText = regResellers.length;
+        }
+
+        function updatePaymentStatus(index, status) {
+            let regResellers = JSON.parse(localStorage.getItem('registeredResellers')) || [];
+            regResellers[index].subscriptionStatus = status;
+            localStorage.setItem('registeredResellers', JSON.stringify(regResellers));
+            alert('পেমেন্ট স্ট্যাটাস সফলভাবে আপডেট করা হয়েছে!');
+        }
+
+        function updateAccountStatus(index, status) {
+            let regResellers = JSON.parse(localStorage.getItem('registeredResellers')) || [];
+            regResellers[index].accountStatus = status;
+            localStorage.setItem('registeredResellers', JSON.stringify(regResellers));
+            alert('রিসেলার অ্যাকাউন্ট স্ট্যাটাস ' + status + ' করা হয়েছে!');
+            loadResellersTable();
+        }
+
+        function adminResetResellerPassword(phone) {
+            let newPass = prompt("এই রিসেলারের জন্য নতুন পাসওয়ার্ড লিখুন:");
+            if (!newPass) return;
+            let regResellers = JSON.parse(localStorage.getItem('registeredResellers')) || [];
+            let index = regResellers.findIndex(r => (r.phone === phone || r.mobile === phone));
+            if (index !== -1) {
+                regResellers[index].password = newPass.trim();
+                localStorage.setItem('registeredResellers', JSON.stringify(regResellers));
+                alert("সফল! রিসেলারের নতুন পাসওয়ার্ড সেট করা হয়েছে।");
+                loadResellersTable();
+            }
+        }
+
+        function deleteReseller(index) {
+            if(confirm('আপনি কি নিশ্চিতভাবে এই রিসেলারকে ডিলিট করতে চান?')) {
+                let regResellers = JSON.parse(localStorage.getItem('registeredResellers')) || [];
+                regResellers.splice(index, 1);
+                localStorage.setItem('registeredResellers', JSON.stringify(regResellers));
+                loadResellersTable();
+            }
+        }
+
+        // ব্যালেন্স লিস্ট লোড
+        function loadResellers() {
+            let resellers = JSON.parse(localStorage.getItem('resellerBalances')) || [];
+            let resellerTableBody = document.getElementById('resellerTableBody');
+            if(!resellerTableBody) return;
+            if(resellers.length === 0) {
+                resellerTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">কোনো রিসেলার নেই।</td></tr>`;
+            } else {
+                resellerTableBody.innerHTML = '';
+                resellers.forEach((res, index) => {
+                    resellerTableBody.innerHTML += `
+                        <tr>
+                            <td><strong>${res.phone}</strong></td>
+                            <td>${res.name}</td>
+                            <td><span style="color: #0b6623; font-weight: bold;">${res.balance} TK</span></td>
+                            <td><button onclick="deleteResellerBalance(${index})" style="background:#ef4444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Delete</button></td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function deleteResellerBalance(index) {
+            let resellers = JSON.parse(localStorage.getItem('resellerBalances')) || [];
+            resellers.splice(index, 1);
+            localStorage.setItem('resellerBalances', JSON.stringify(resellers));
+            loadResellers();
+        }
+
+        // অর্ডার লোড করার ফাংশন
+        function loadOrders() {
+            let orders = JSON.parse(localStorage.getItem('storeOrders')) || 
+                         JSON.parse(localStorage.getItem('orders')) || 
+                         JSON.parse(localStorage.getItem('customerOrders')) || 
+                         JSON.parse(localStorage.getItem('cartOrders')) || [];
+            
+            let tbody = document.getElementById('ordersTableBody');
+            if(!tbody) return;
+            
+            const statuses = [
+                "pending", "processing", "packaging", "waiting for pickup", 
+                "pending in courier", "waiting for approval", "delivered", 
+                "delivery successful", "pending payment delivery charge", 
+                "paid delivery charge", "hold", "cancelled", 
+                "waiting for return", "returned successful"
+            ];
+
+            if(orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">কোনো অর্ডার পাওয়া যায়নি।</td></tr>`;
+            } else {
+                tbody.innerHTML = '';
+                orders.forEach((ord, index) => {
+                    let optionsHTML = '';
+                    statuses.forEach(st => {
+                        let isSelected = (ord.status === st) ? 'selected' : '';
+                        optionsHTML += `<option value="${st}" ${isSelected}>${st}</option>`;
+                    });
+
+                    let dateTime = ord.dateTime || ord.date || 'N/A';
+                    let resellerId = ord.resellerId || ord.reseller || 'Direct Customer';
+                    
+                    let custName = ord.customerName || ord.name || 'N/A';
+                    let custPhone = ord.customerPhone || ord.phone || ord.mobile || 'N/A';
+                    let custAddress = ord.customerAddress || ord.address || 'N/A';
+
+                    let imgSrc = ord.image || ord.img || 'https://via.placeholder.com/40';
+                    let prodName = ord.productName || ord.product || 'N/A';
+                    let prodCode = ord.productCode || ord.sku || 'N/A';
+                    let adminPrice = ord.adminPrice || ord.price || 0;
+                    let sellPrice = ord.resellerSellPrice || ord.sellPrice || 0;
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${dateTime}</td>
+                            <td><strong>${resellerId}</strong></td>
+                            <td>
+                                <strong>নাম:</strong> ${custName}<br>
+                                <strong>মোবাইল:</strong> ${custPhone}<br>
+                                <small style="color:var(--text-muted);">ঠিকানা: ${custAddress}</small>
+                            </td>
+                            <td><img src="${imgSrc}" alt="Img" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;"></td>
+                            <td>${prodName} <br><small style="color:var(--text-muted);">SKU: ${prodCode}</small></td>
+                            <td>অ্যাডমিন: ${adminPrice} TK<br><span style="color: #4f46e5; font-weight: bold;">বিক্রয়: ${sellPrice} TK</span></td>
+                            <td>
+                                <select onchange="updateOrderStatus(${index}, this.value)" class="form-control" style="padding: 4px; font-size: 11px; width: 130px;">
+                                    ${optionsHTML}
+                                </select>
+                            </td>
+                            <td>
+                                <button onclick="deleteOrder(${index})" style="background:#ef4444; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('totalOrdersCount').innerText = orders.length;
+        }
+
+        // অর্ডার স্ট্যাটাস আপডেট করার ফাংশন
+        function updateOrderStatus(index, newStatus) {
+            let orders = JSON.parse(localStorage.getItem('storeOrders')) || 
+                         JSON.parse(localStorage.getItem('orders')) || 
+                         JSON.parse(localStorage.getItem('customerOrders')) || 
+                         JSON.parse(localStorage.getItem('cartOrders')) || [];
+            if(orders[index]) {
+                orders[index].status = newStatus;
+                localStorage.setItem('storeOrders', JSON.stringify(orders));
+                alert('অর্ডারের স্ট্যাটাস আপডেট করা হয়েছে!');
+                loadOrders();
+            }
+        }
+
+        // অর্ডার ডিলিট করার ফাংশন
+        function deleteOrder(index) {
+            if(confirm('আপনি কি এই অর্ডারটি ডিলিট করতে চান?')) {
+                let orders = JSON.parse(localStorage.getItem('storeOrders')) || 
+                             JSON.parse(localStorage.getItem('orders')) || 
+                             JSON.parse(localStorage.getItem('customerOrders')) || 
+                             JSON.parse(localStorage.getItem('cartOrders')) || [];
+                orders.splice(index, 1);
+                localStorage.setItem('storeOrders', JSON.stringify(orders));
+                loadOrders();
+                updateDashboardCounts();
+            }
+        }
+
+        // কাস্টমার লিস্ট লোড ও রিসেলার স্টাইলে সাজানোর ফাংশন
+        function loadCustomers() {
+            let orders = JSON.parse(localStorage.getItem('storeOrders')) || 
+                         JSON.parse(localStorage.getItem('orders')) || 
+                         JSON.parse(localStorage.getItem('customerOrders')) || 
+                         JSON.parse(localStorage.getItem('cartOrders')) || [];
+            
+            let tbody = document.getElementById('customersTableBody');
+            if(!tbody) return;
+
+            // ইউনিক কাস্টমার ফিল্টার করার জন্য (মোবাইল নম্বর অনুযায়ী)
+            let uniqueCustomers = {};
+            orders.forEach((ord, index) => {
+                let phone = ord.customerPhone || ord.phone || ord.mobile || 'N/A';
+                if(phone !== 'N/A' && !uniqueCustomers[phone]) {
+                    uniqueCustomers[phone] = {
+                        originalIndex: index,
+                        name: ord.customerName || ord.name || 'N/A',
+                        phone: phone,
+                        address: ord.customerAddress || ord.address || 'N/A',
+                        date: ord.dateTime || ord.date || 'N/A',
+                        product: ord.productName || ord.product || 'N/A',
+                        totalPrice: ord.resellerSellPrice || ord.sellPrice || ord.price || 0
+                    };
+                }
+            });
+
+            let customersList = Object.values(uniqueCustomers);
+            document.getElementById('totalCustomersCount').innerText = customersList.length;
+
+            if(customersList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">কোনো কাস্টমার পাওয়া যায়নি।</td></tr>`;
+            } else {
+                tbody.innerHTML = '';
+                customersList.forEach((cust, index) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${cust.date}</td>
+                            <td>
+                                <strong>${cust.name}</strong><br>
+                                <small style="color: #0b6623; font-weight: bold;">কাস্টমার আইডি: CUST-00${index+1}</small>
+                            </td>
+                            <td>${cust.phone}</td>
+                            <td>
+                                ঠিকানা: ${cust.address}
+                            </td>
+                            <td>
+                                পণ্য: <b>${cust.product}</b><br>
+                                মূল্য: <span style="color: #4f46e5; font-weight: bold;">${cust.totalPrice} TK</span>
+                            </td>
+                            <td>
+                                <button onclick="deleteCustomerOrder('${cust.phone}')" style="background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">
+                                    <i class="fa-solid fa-trash"></i> ডিলিট
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        // নির্দিষ্ট কাস্টমারের অর্ডার বা তথ্য ডিলিট করার ফাংশন
+        function deleteCustomerOrder(phone) {
+            if(confirm('আপনি কি নিশ্চিতভাবে এই কাস্টমারের তথ্য ও অর্ডার ডিলিট করতে চান?')) {
+                let orders = JSON.parse(localStorage.getItem('storeOrders')) || 
+                             JSON.parse(localStorage.getItem('orders')) || 
+                             JSON.parse(localStorage.getItem('customerOrders')) || 
+                             JSON.parse(localStorage.getItem('cartOrders')) || [];
+                
+                // ওই ফোন নম্বরের সমস্ত অর্ডার ফিল্টার করে বাদ দেওয়া
+                let updatedOrders = orders.filter(ord => {
+                    let ordPhone = ord.customerPhone || ord.phone || ord.mobile || '';
+                    return ordPhone !== phone;
+                });
+
+                localStorage.setItem('storeOrders', JSON.stringify(updatedOrders));
+                loadOrders();
+                loadCustomers();
+                updateDashboardCounts();
+                alert('কাস্টমার সফলভাবে ডিলিট করা হয়েছে!');
+            }
+        }
+    </script>
+</body>
+</html>

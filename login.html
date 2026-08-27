@@ -3,135 +3,444 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Mart Express BD</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Mart Express BD - লগইন ও রেজিস্ট্রেশন</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="app.js" defer></script>
     <style>
-        body {
-            background-color: #f3f4f6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        :root {
+            --primary-color: #0b6623;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
         }
-        .login-card {
-            background: #ffffff;
-            width: 100%;
-            max-width: 400px;
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        .login-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-        .login-header i {
-            font-size: 40px;
-            color: #047857;
-            margin-bottom: 8px;
-        }
-        .login-header h2 {
-            font-size: 22px;
-            color: #111827;
-        }
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #374151;
-        }
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .form-control:focus {
-            border-color: #047857;
-        }
-        .btn-submit {
-            width: 100%;
-            background-color: #047857;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
-        }
-        .btn-submit:hover {
-            background-color: #065f46;
-        }
-        .login-footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #6b7280;
-        }
-        .login-footer a {
-            color: #047857;
-            text-decoration: none;
-            font-weight: 600;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: var(--bg-body); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .auth-container { width: 100%; max-width: 480px; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border-color); box-sizing: border-box; margin: 20px; }
+        .auth-brand { text-align: center; font-size: 22px; font-weight: bold; color: var(--primary-color); margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .auth-sub { text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+        
+        .tab-buttons { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); }
+        .tab-btn { flex: 1; padding: 10px; background: none; border: none; font-size: 15px; font-weight: bold; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); margin-bottom: -2px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+        .form-group label span { color: #ef4444; }
+        .form-control { width: 100%; padding: 11px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; box-sizing: border-box; outline: none; background: #fff; }
+        .form-control:focus { border-color: var(--primary-color); }
+
+        .subscription-box { background: #fdf4ff; border: 1px dashed #c084fc; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; color: #6b21a8; }
+        .subscription-box strong { color: #7e22ce; font-size: 14px; }
+
+        .btn-submit { width: 100%; background: var(--primary-color); color: white; border: none; padding: 12px; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-submit:hover { background: #09521c; }
+
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+        
+        .store-redirect { text-align: center; margin-top: 15px; font-size: 13px; }
+        .store-redirect a { color: var(--primary-color); text-decoration: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="login-card">
-        <div class="login-header">
-            <i class="fa-solid fa-bolt"></i>
-            <h2>Mart Express BD</h2>
-            <p style="font-size: 13px; color: #6b7280;">আপনার অ্যাকাউন্ট সিলেক্ট করে লগইন করুন</p>
+    <div class="auth-container">
+        <div class="auth-brand">
+            <i class="fa-solid fa-bolt" style="color: #facc15;"></i> Mart Express BD
+        </div>
+        <div class="auth-sub" id="formTitleText">আপনার অ্যাকাউন্ট সিলেক্ট করে লগইন করুন</div>
+
+        <!-- ট্যাব সুইচিং -->
+        <div class="tab-buttons" id="mainTabs">
+            <button class="tab-btn active" onclick="switchAuthTab('login')">লগইন</button>
+            <button class="tab-btn" onclick="switchAuthTab('register')">নতুন রেজিস্ট্রেশন</button>
         </div>
 
-        <form id="login-form">
-            <!-- Account Type Selection -->
-            <div class="form-group">
-                <label for="user-role">অ্যাকাউন্টের ধরন</label>
-                <select id="user-role" class="form-control" required>
-                    <option value="reseller">Reseller Dashboard</option>
-                    <option value="admin">Admin Dashboard</option>
-                    <option value="customer">Customer Home</option>
-                </select>
+        <!-- ১. লগইন ফর্ম -->
+        <div id="loginSection" class="form-section active">
+            <form onsubmit="handleUniversalLogin(event)">
+                <div class="form-group">
+                    <label>অ্যাকাউন্টের ধরন সিলেক্ট করুন <span>*</span></label>
+                    <select class="form-control" id="loginRole" required>
+                        <option value="">-- রোল নির্বাচন করুন --</option>
+                        <option value="reseller">Reseller (রিসেলার)</option>
+                        <option value="customer">Customer (কাস্টমার)</option>
+                        <option value="admin">Admin (অ্যাডমিন)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>আইডি / মোবাইল নম্বর / ইউজারনেম <span>*</span></label>
+                    <input type="text" class="form-control" id="loginIdentifier" placeholder="যেমন: admin, MEBD-001 বা মোবাইল নম্বর" required>
+                </div>
+                <div class="form-group">
+                    <label>পাসওয়ার্ড <span>*</span></label>
+                    <input type="password" class="form-control" id="loginPassword" placeholder="পাসওয়ার্ড দিন" required>
+                </div>
+                <button type="submit" class="btn-submit">লগইন করুন</button>
+            </form>
+            <div class="store-redirect" style="display: flex; justify-content: space-between; margin-top: 15px;">
+                <a onclick="switchAuthTab('forgot')" style="color: #ef4444; cursor: pointer;">পাসওয়ার্ড ভুলে গেছেন?</a>
+                <a onclick="switchAuthTab('register')">রেজিস্ট্রেশন করুন</a>
             </div>
+        </div>
 
-            <!-- Username or Phone -->
-            <div class="form-group">
-                <label for="username">মোবাইল নম্বর অথবা ইউজারনেম</label>
-                <input type="text" id="username" class="form-control" placeholder="017XXXXXXXX" required>
+        <!-- ২. পাসওয়ার্ড রিসেট / ফরগট ফর্ম -->
+        <div id="forgotSection" class="form-section">
+            <form onsubmit="handleForgotPassword(event)">
+                <div class="form-group">
+                    <label>অ্যাকাউন্টের ধরন সিলেক্ট করুন <span>*</span></label>
+                    <select class="form-control" id="forgotRole" required>
+                        <option value="">-- রোল নির্বাচন করুন --</option>
+                        <option value="reseller">Reseller (রিসেলার)</option>
+                        <option value="customer">Customer (কাস্টমার)</option>
+                        <option value="admin">Admin (অ্যাডমিন)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>রেজিস্টার্ড মোবাইল নম্বর, আইডি অথবা ইউজারনেম <span>*</span></label>
+                    <input type="text" class="form-control" id="forgotIdentifier" placeholder="যেমন: admin, MEBD-001 বা 01716XXXXXX" required>
+                </div>
+                <div class="form-group">
+                    <label>নতুন পাসওয়ার্ড দিন <span>*</span></label>
+                    <input type="password" class="form-control" id="newPassword" placeholder="নতুন পাসওয়ার্ড লিখুন" required>
+                </div>
+                <button type="submit" class="btn-submit">পাসওয়ার্ড পরিবর্তন করুন</button>
+            </form>
+            <div class="store-redirect">
+                <p>মনে এসেছে? <a onclick="switchAuthTab('login')">লগইন করুন</a></p>
             </div>
+        </div>
 
-            <!-- Password -->
-            <div class="form-group">
-                <label for="password">পাসওয়ার্ড</label>
-                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+        <!-- ৩. রেজিস্ট্রেশন ফর্ম -->
+        <div id="registerSection" class="form-section">
+            <form onsubmit="handleUniversalRegister(event)">
+                <div class="form-group">
+                    <label>অ্যাকাউন্টের ধরন সিলেক্ট করুন <span>*</span></label>
+                    <select class="form-control" id="regAccountType" onchange="toggleRegistrationFields()" required>
+                        <option value="Admin">Admin (অ্যাডমিন)</option>
+                        <option value="Reseller">Reseller (রিসেলার)</option>
+                        <option value="Customer" selected>Customer (কাস্টমার)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>নাম / ইউজারনেম <span>*</span></label>
+                    <input type="text" class="form-control" id="regName" placeholder="পূর্ণ নাম বা অ্যাডমিন ইউজারনেম" required>
+                </div>
+                <div class="form-group">
+                    <label>মোবাইল নম্বর / ইউজার আইডি <span>*</span></label>
+                    <input type="text" class="form-control" id="regPhone" placeholder="যেমন: admin বা 01716XXXXXX" required>
+                </div>
+
+                <!-- শুধুমাত্র রিসেলারের জন্য অতিরিক্ত ফিল্ডসমূহ -->
+                <div id="resellerExtraFields" style="display: none;">
+                    <div class="form-group">
+                        <label>পূর্ণ ঠিকানা <span>*</span></label>
+                        <textarea class="form-control" id="regAddress" rows="2" placeholder="বাসা/হোল্ডিং, রোড, থানা, জেলা"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>NID বা জন্ম নিবন্ধন সার্টিফিকেট নম্বর <span>*</span></label>
+                        <input type="text" class="form-control" id="regNidNumber" placeholder="নম্বর লিখুন">
+                    </div>
+                    <div class="form-group">
+                        <label>NID বা জন্ম নিবন্ধন সার্টিফিকেটের ছবি (Pic) <span>*</span></label>
+                        <input type="file" class="form-control" id="regNidPic" accept="image/*">
+                    </div>
+
+                    <div class="subscription-box">
+                        <strong>বার্ষিক সাবস্ক্রিপশন ফি: ৩০০ টাকা / বছর</strong>
+                        <p style="margin: 5px 0 0 0;">নির্ধারিত মাধ্যমে ৩০০ টাকা পাঠিয়ে নিচের তথ্য দিন।</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>পেমেন্ট মেথড সিলেক্ট করুন <span>*</span></label>
+                        <select class="form-control" id="payMethod">
+                            <option value="">-- মাধ্যম নির্বাচন করুন --</option>
+                            <option value="Bkash">বিকাশ (Bkash)</option>
+                            <option value="Nagad">নগদ (Nagad)</option>
+                            <option value="Rocket">রকেট (Rocket)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>পেমেন্ট প্রেরক নম্বর <span>*</span></label>
+                        <input type="text" class="form-control" id="paySenderNo" placeholder="আপনার অ্যাকাউন্ট নম্বর">
+                    </div>
+
+                    <div class="form-group">
+                        <label>ট্রানজেকশন আইডি (TrxID) <span>*</span></label>
+                        <input type="text" class="form-control" id="payTrxId" placeholder="TrxID লিখুন">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>পাসওয়ার্ড <span>*</span></label>
+                    <input type="password" class="form-control" id="regPassword" placeholder="একটি শক্তিশালী পাসওয়ার্ড দিন" required>
+                </div>
+
+                <button type="submit" class="btn-submit" id="regSubmitBtn">রেজিস্ট্রেশন সম্পন্ন করুন</button>
+            </form>
+            <div class="store-redirect">
+                <p>ইতিমধ্যে অ্যাকাউন্ট আছে? <a onclick="switchAuthTab('login')">লগইন করুন</a></p>
             </div>
-            <div style="text-align: right; margin-bottom: 12px;">
-    <a href="forgot-password.html" style="color: #047857; font-size: 13px; text-decoration: none; font-weight: 600;">পাসওয়ার্ড ভুলে গেছেন?</a>
-</div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn-submit">Login</button>
-        </form>
-
-        <div class="login-footer">
-            নতুন অ্যাকাউন্ট করতে চান? <a href="register.html">রেজিস্ট্রেশন করুন</a>
         </div>
     </div>
 
+    <script>
+        function switchAuthTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.form-section').forEach(sec => sec.classList.remove('active'));
+            let mainTabs = document.getElementById('mainTabs');
+
+            if(tabName === 'login') {
+                mainTabs.style.display = 'flex';
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('loginSection').classList.add('active');
+                document.getElementById('formTitleText').innerText = 'আপনার অ্যাকাউন্ট সিলেক্ট করে লগইন করুন';
+            } else if(tabName === 'register') {
+                mainTabs.style.display = 'flex';
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('registerSection').classList.add('active');
+                document.getElementById('formTitleText').innerText = 'নতুন অ্যাকাউন্ট রেজিস্ট্রেশন';
+                toggleRegistrationFields();
+            } else if(tabName === 'forgot') {
+                mainTabs.style.display = 'none';
+                document.getElementById('forgotSection').classList.add('active');
+                document.getElementById('formTitleText').innerText = 'পাসওয়ার্ড পুনরুদ্ধার (Forgot Password)';
+            }
+        }
+
+        function toggleRegistrationFields() {
+            let accType = document.getElementById('regAccountType').value;
+            let resellerFields = document.getElementById('resellerExtraFields');
+            let address = document.getElementById('regAddress');
+            let nidNum = document.getElementById('regNidNumber');
+            let nidPic = document.getElementById('regNidPic');
+            let payMethod = document.getElementById('payMethod');
+            let senderNo = document.getElementById('paySenderNo');
+            let trxId = document.getElementById('payTrxId');
+
+            if(accType === 'Reseller') {
+                resellerFields.style.display = 'block';
+                address.setAttribute('required', 'true');
+                nidNum.setAttribute('required', 'true');
+                nidPic.setAttribute('required', 'true');
+                payMethod.setAttribute('required', 'true');
+                senderNo.setAttribute('required', 'true');
+                trxId.setAttribute('required', 'true');
+            } else {
+                resellerFields.style.display = 'none';
+                address.removeAttribute('required');
+                nidNum.removeAttribute('required');
+                nidPic.removeAttribute('required');
+                payMethod.removeAttribute('required');
+                senderNo.removeAttribute('required');
+                trxId.removeAttribute('required');
+            }
+        }
+
+        function handleUniversalRegister(event) {
+            event.preventDefault();
+            let accType = document.getElementById('regAccountType').value;
+            let name = document.getElementById('regName').value.trim();
+            let phone = document.getElementById('regPhone').value.trim();
+            let password = document.getElementById('regPassword').value.trim();
+
+            if(accType === 'Admin') {
+                let admins = JSON.parse(localStorage.getItem('registeredAdmins')) || [];
+                if(admins.find(a => a.username === phone)) {
+                    alert('এই ইউজারনেম/আইডি দিয়ে ইতিমধ্যে একটি অ্যাডমিন অ্যাকাউন্ট রয়েছে!');
+                    return;
+                }
+
+                let newAdmin = {
+                    username: phone,
+                    name: name,
+                    password: password,
+                    dateTime: new Date().toLocaleString()
+                };
+
+                admins.push(newAdmin);
+                localStorage.setItem('registeredAdmins', JSON.stringify(admins));
+                alert('সফলভাবে নতুন অ্যাডমিন অ্যাকাউন্ট তৈরি হয়েছে!');
+                document.getElementById('registerSection').querySelector('form').reset();
+                switchAuthTab('login');
+            } 
+            else if(accType === 'Reseller') {
+                let address = document.getElementById('regAddress').value.trim();
+                let nidNum = document.getElementById('regNidNumber').value.trim();
+                let payMethod = document.getElementById('payMethod').value;
+                let senderNo = document.getElementById('paySenderNo').value.trim();
+                let trxId = document.getElementById('payTrxId').value.trim();
+                let fileInput = document.getElementById('regNidPic');
+
+                if(!payMethod || !senderNo || !trxId || !fileInput.files[0]) {
+                    alert('সকল পেমেন্ট ডিটেইলস প্রদান করা বাধ্যতামূলক!');
+                    return;
+                }
+
+                let regResellers = JSON.parse(localStorage.getItem('registeredResellers')) || [];
+                if(regResellers.find(r => r.phone === phone)) {
+                    alert('এই মোবাইল নম্বরে ইতিমধ্যে একটি রিসেলার অ্যাকাউন্ট রয়েছে!');
+                    return;
+                }
+
+                let resellerId = "MEBD-" + String(regResellers.length + 1).padStart(3, '0');
+
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let newReseller = {
+                        resellerId: resellerId,
+                        accountType: "Reseller",
+                        name: name,
+                        phone: phone,
+                        address: address,
+                        nidNum: nidNum,
+                        nidPic: e.target.result,
+                        password: password,
+                        payMethod: payMethod,
+                        senderNo: senderNo,
+                        trxId: trxId,
+                        subscriptionStatus: 'Paid (Pending Approval)',
+                        dateTime: new Date().toLocaleString()
+                    };
+
+                    regResellers.push(newReseller);
+                    localStorage.setItem('registeredResellers', JSON.stringify(regResellers));
+
+                    let balances = JSON.parse(localStorage.getItem('resellerBalances')) || [];
+                    if(!balances.find(b => b.phone === phone)) {
+                        balances.push({ resellerId: resellerId, name: name, phone: phone, balance: 0 });
+                        localStorage.setItem('resellerBalances', JSON.stringify(balances));
+                    }
+
+                    alert('অভিনন্দন! সফলভাবে রিসেলার রেজিস্ট্রেশন হয়েছে। আপনার আইডি: ' + resellerId);
+                    document.getElementById('registerSection').querySelector('form').reset();
+                    switchAuthTab('login');
+                }
+                reader.readAsDataURL(fileInput.files[0]);
+
+            } else {
+                let customers = JSON.parse(localStorage.getItem('registeredCustomers')) || [];
+                if(customers.find(c => c.phone === phone)) {
+                    alert('এই মোবাইল নম্বরে ইতিমধ্যে একটি কাস্টমার অ্যাকাউন্ট রয়েছে!');
+                    return;
+                }
+
+                let customerId = "CUS-" + String(customers.length + 1).padStart(3, '0');
+
+                let newCustomer = {
+                    customerId: customerId,
+                    accountType: "Customer",
+                    name: name,
+                    phone: phone,
+                    password: password,
+                    dateTime: new Date().toLocaleString()
+                };
+
+                customers.push(newCustomer);
+                localStorage.setItem('registeredCustomers', JSON.stringify(customers));
+
+                alert('অভিনন্দন! সফলভাবে কাস্টমার রেজিস্ট্রেশন হয়েছে। আপনার কাস্টমার আইডি হলো: ' + customerId);
+                document.getElementById('registerSection').querySelector('form').reset();
+                switchAuthTab('login');
+            }
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            let role = document.getElementById('forgotRole').value;
+            let identifier = document.getElementById('forgotIdentifier').value.trim();
+            let newPassword = document.getElementById('newPassword').value.trim();
+
+            if(role === 'reseller') {
+                let regResellers = JSON.parse(localStorage.getItem('registeredResellers')) || [];
+                let index = regResellers.findIndex(r => r.phone === identifier || r.resellerId === identifier);
+
+                if(index !== -1) {
+                    regResellers[index].password = newPassword;
+                    localStorage.setItem('registeredResellers', JSON.stringify(regResellers));
+                    alert('সফলভাবে রিসেলার পাসওয়ার্ড পরিবর্তন করা হয়েছে!');
+                    switchAuthTab('login');
+                } else {
+                    alert('এই তথ্য দিয়ে কোনো রিসেলার অ্যাকাউন্ট পাওয়া যায়নি!');
+                }
+            } 
+            else if(role === 'customer') {
+                let customers = JSON.parse(localStorage.getItem('registeredCustomers')) || [];
+                let index = customers.findIndex(c => c.phone === identifier || c.customerId === identifier);
+
+                if(index !== -1) {
+                    customers[index].password = newPassword;
+                    localStorage.setItem('registeredCustomers', JSON.stringify(customers));
+                    alert('সফলভাবে কাস্টমার পাসওয়ার্ড পরিবর্তন করা হয়েছে!');
+                    switchAuthTab('login');
+                } else {
+                    alert('এই তথ্য দিয়ে কোনো কাস্টমার অ্যাকাউন্ট পাওয়া যায়নি!');
+                }
+            } 
+            else if(role === 'admin') {
+                let admins = JSON.parse(localStorage.getItem('registeredAdmins')) || [];
+                let index = admins.findIndex(a => a.username === identifier);
+
+                if(index !== -1 || identifier === 'admin' || identifier === '01716292744') {
+                    if(index !== -1) {
+                        admins[index].password = newPassword;
+                        localStorage.setItem('registeredAdmins', JSON.stringify(admins));
+                    }
+                    localStorage.setItem('adminCustomPassword', newPassword);
+                    alert('সফলভাবে অ্যাডমিন পাসওয়ার্ড পরিবর্তন করা হয়েছে!');
+                    switchAuthTab('login');
+                } else {
+                    alert('অ্যাডমিন ইউজারনেম সঠিক নয়!');
+                }
+            }
+        }
+
+        function handleUniversalLogin(event) {
+            event.preventDefault();
+            let role = document.getElementById('loginRole').value;
+            let identifier = document.getElementById('loginIdentifier').value.trim();
+            let password = document.getElementById('loginPassword').value.trim();
+
+            let defaultAdminPass = localStorage.getItem('adminCustomPassword') || 'admin123';
+            let admins = JSON.parse(localStorage.getItem('registeredAdmins')) || [];
+            let foundAdmin = admins.find(a => a.username === identifier && a.password === password);
+
+            if(role === 'admin') {
+                if(((identifier === 'admin' || identifier === '01716292744') && password === defaultAdminPass) || foundAdmin) {
+                    localStorage.setItem('currentAdmin', JSON.stringify({ name: foundAdmin ? foundAdmin.name : 'Admin', role: 'admin' }));
+                    alert('অ্যাডমিন প্যানেলে সফলভাবে লগইন হয়েছে!');
+                    window.location.href = 'admin.html';
+                } else {
+                    alert('অ্যাডমিন ইউজারনেম বা পাসওয়ার্ড ভুল!');
+                }
+            } 
+            else if(role === 'reseller') {
+                let regResellers = JSON.parse(localStorage.getItem('registeredResellers')) || [];
+                let found = regResellers.find(r => (r.phone === identifier || r.resellerId === identifier) && r.password === password);
+
+                if(found) {
+                    localStorage.setItem('currentReseller', JSON.stringify(found));
+                    alert('স্বাগতম ' + found.name + '! সফলভাবে লগইন হয়েছে।');
+                    window.location.href = 'index.html';
+                } else {
+                    alert('আইডি বা পাসওয়ার্ড ভুল অথবা আপনার সাবস্ক্রিপশন অনুমোদিত হয়নি!');
+                }
+            } 
+            else if(role === 'customer') {
+                let customers = JSON.parse(localStorage.getItem('registeredCustomers')) || [];
+                let foundCust = customers.find(c => (c.phone === identifier || c.customerId === identifier) && c.password === password);
+
+                if(foundCust) {
+                    localStorage.setItem('currentCustomer', JSON.stringify(foundCust));
+                    alert('স্বাগতম ' + foundCust.name + '! কাস্টমার লগইন সফল হয়েছে।');
+                    window.location.href = 'index.html';
+                } else {
+                    alert('কাস্টমার আইডি/নম্বর বা পাসওয়ার্ড ভুল!');
+                }
+            }
+        }
+    </script>
 </body>
 </html>

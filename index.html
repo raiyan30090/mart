@@ -142,7 +142,7 @@
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-item active">
             <i class="fa-solid fa-house bottom-icon"></i>
-            হোম
+            होम
         </a>
         <a href="#" onclick="openFeature('সার্চ')" class="bottom-item">
             <i class="fa-solid fa-magnifying-glass bottom-icon"></i>
@@ -159,11 +159,49 @@
             </div>
             কার্ট
         </a>
-        <a href="login.html" class="bottom-item">
+        <a href="login.html" class="bottom-item" onclick="handleLogout(event)">
             <i class="fa-regular fa-user bottom-icon"></i>
-            প্রোফাইল
+            লগআউট
         </a>
     </nav>
 
+    <script>
+        // পেজ লোড হওয়ার সাথে সাথে চেক করা যে রিসেলার লগইন করা আছে কিনা
+        window.addEventListener('DOMContentLoaded', () => {
+            let currentReseller = localStorage.getItem('currentReseller');
+            if(!currentReseller) {
+                alert('দয়া করে প্রথমে লগইন করুন!');
+                window.location.href = 'login.html'; // লগইন পেজে রিডাইরেক্ট করবে
+            }
+        });
+
+        // লগআউট ফাংশন
+        function handleLogout(event) {
+            event.preventDefault();
+            localStorage.removeItem('currentReseller');
+            alert('সফলভাবে লগআউট হয়েছে!');
+            window.location.href = 'login.html';
+        }
+
+        // ব্যালেন্স টগল ফাংশন
+        function toggleBalance() {
+            let balanceText = document.getElementById('balance-text');
+            let currentReseller = JSON.parse(localStorage.getItem('currentReseller'));
+            let balances = JSON.parse(localStorage.getItem('resellerBalances')) || [];
+            
+            let userBal = balances.find(b => b.phone === currentReseller.phone);
+            let amount = userBal ? userBal.balance : 0;
+
+            if(balanceText.innerText.includes('ব্যালেন্স দেখুন')) {
+                balanceText.innerText = '৳ ' + amount;
+            } else {
+                balanceText.innerText = '৳ ব্যালেন্স দেখুন';
+            }
+        }
+
+        function openFeature(featureName) {
+            alert(featureName + ' ফিচারটি খুব শীঘ্রই আসছে!');
+        }
+    </script>
 </body>
 </html>
