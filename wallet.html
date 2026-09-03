@@ -19,8 +19,29 @@
         <h2><i class="fa-solid fa-wallet" style="color: #14b8a6;"></i> আপনার ওয়ালেট</h2>
         <div class="balance-card">
             <p>বর্তমান ব্যালেন্স</p>
-            <h1>৳ 5,250.00</h1>
+            <h1 id="walletBalance">৳ 0.00</h1>
         </div>
     </div>
+    <script>
+    // ইউজারের ডাটা এবং অ্যাডমিন প্যানেলের ব্যালেন্স সিঙ্ক করার কোড
+    function loadWalletBalance() {
+      const user = JSON.parse(localStorage.getItem('user')) || JSON.parse(localStorage.getItem('loggedReseller')) || JSON.parse(localStorage.getItem('currentReseller'));
+      if(!user) return;
+
+      let userPhone = user.phone || user.mobile || user.resellerId;
+      let resellers = JSON.parse(localStorage.getItem('resellerBalances')) || [];
+      let currentReseller = resellers.find(r => r.phone === userPhone || r.mobile === userPhone || r.id === userPhone);
+
+      let balanceEl = document.getElementById('walletBalance');
+      if(currentReseller && balanceEl) {
+        balanceEl.innerText = `৳ ${parseFloat(currentReseller.balance).toFixed(2)}`;
+      } else if(user && user.balance !== undefined && balanceEl) {
+        balanceEl.innerText = `৳ ${parseFloat(user.balance).toFixed(2)}`;
+      }
+    }
+
+    loadWalletBalance();
+    setInterval(loadWalletBalance, 2000);
+  </script>
 </body>
 </html>

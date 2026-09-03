@@ -2,55 +2,176 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <title>Add Balance - Mart Express BD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ব্যালেন্স অ্যাড - Mart Express BD</title>
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #006a4e;
+      font-weight: bold;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+    .back-btn:hover {
+      text-decoration: underline;
+    }
+    .form-container {
+      background: white;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .form-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      border-left: 4px solid #006a4e;
+      padding-left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: #555;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      box-sizing: border-box;
+      transition: 0.2s;
+    }
+    .form-control:focus {
+      border-color: #006a4e;
+      box-shadow: 0 0 0 3px rgba(0, 106, 78, 0.1);
+    }
+    .submit-btn {
+      background-color: #006a4e;
+      color: white;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+    .submit-btn:hover {
+      background-color: #00523d;
+    }
+  </style>
 </head>
 <body>
 
-  <nav class="navbar">
-    <h2>💳 Add Balance</h2>
-    <a href="./reseller-dashboard.html">Dashboard</a>
-  </nav>
+  <!-- ড্যাশবোর্ডে ফিরে যাওয়ার বাটন -->
+  <a href="reseller-dashboard.html" class="back-btn">← ড্যাশবোর্ডে ফিরুন</a>
 
-  <div class="container">
-    <div class="card" style="max-width: 500px; margin: 0 auto;">
-      <h3>Send Money & Submit TrxID</h3>
-      <form id="addBalanceForm" style="margin-top: 15px;">
-        <label>Amount (৳)</label>
-        <input type="number" id="amount" required>
-
-        <label>Payment Method</label>
-        <select id="paymentMethod">
-          <option value="BKASH">bKash Personal</option>
-          <option value="NAGAD">Nagad Personal</option>
-          <option value="ROCKET">Rocket Personal</option>
-        </select>
-
-        <label>Transaction ID (TrxID)</label>
-        <input type="text" id="gatewayTrxId" placeholder="e.g. 9B7A2K11X" required>
-
-        <button type="submit" class="btn" style="width: 100%; margin-top: 20px;">Submit Verification</button>
-      </form>
+  <!-- ফরম কন্টেইনার -->
+  <div class="form-container">
+    <div class="form-title">
+      <span>➕</span> রিসেলার ওয়ালেটে টাকা যোগ করুন
     </div>
+
+    <form id="addBalanceForm" onsubmit="submitBalanceRequest(event)">
+      
+      <!-- রিসেলার আইডি ইনপুট ফিল্ড -->
+      <div class="form-group">
+        <label>রিসেলার আইডি / ফোন নম্বর</label>
+        <input type="text" class="form-control" id="resellerIdInput" placeholder="আপনার রিসেলার আইডি বা ফোন লিখুন" required>
+      </div>
+
+      <div class="form-group">
+        <label>পেমেন্ট মেথড</label>
+        <select class="form-control" id="paymentMethod">
+          <option value="bKash">bKash (বিকাশ)</option>
+          <option value="Nagad">Nagad (নগদ)</option>
+          <option value="Rocket">Rocket (রকেট)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>টাকার পরিমাণ (৳)</label>
+        <input type="number" class="form-control" id="amount" placeholder="যেমন: 500" required>
+      </div>
+
+      <div class="form-group">
+        <label>TrxID (ট্রানজেকশন আইডি)</label>
+        <input type="text" class="form-control" id="trxId" placeholder="যেমন: 9B7A2K11X" required>
+      </div>
+
+      <button type="submit" class="submit-btn">জমা দিন</button>
+    </form>
   </div>
 
-  <script src="../js/app.js"></script>
   <script>
-    document.getElementById('addBalanceForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const user = JSON.parse(localStorage.getItem('user'));
-      if(!user) return alert('অনুগ্রহ করে লগইন করুন');
+    // পেজ লোড হওয়ার সাথে সাথে লগইন করা ইউজারের আইডি অটো ফিলাপ করে দেওয়া
+    window.onload = function() {
+      let user = JSON.parse(localStorage.getItem('user')) || JSON.parse(localStorage.getItem('loggedReseller')) || JSON.parse(localStorage.getItem('currentReseller'));
+      if(user) {
+        let idField = document.getElementById('resellerIdInput');
+        idField.value = user.resellerId || user.phone || user.mobile || '';
+      }
+    };
 
-      const payload = {
-        userId: user._id,
-        amount: Number(document.getElementById('amount').value),
-        paymentMethod: document.getElementById('paymentMethod').value,
-        gatewayTrxId: document.getElementById('gatewayTrxId').value
+    function submitBalanceRequest(event) {
+      event.preventDefault();
+      
+      let resellerId = document.getElementById('resellerIdInput').value;
+      let method = document.getElementById('paymentMethod').value;
+      let amount = document.getElementById('amount').value;
+      let trxId = document.getElementById('trxId').value;
+
+      let user = JSON.parse(localStorage.getItem('user')) || JSON.parse(localStorage.getItem('loggedReseller')) || JSON.parse(localStorage.getItem('currentReseller'));
+
+      let requestData = {
+        name: user ? (user.name || 'Reseller') : 'Reseller',
+        resellerId: resellerId,
+        method: method,
+        amount: parseFloat(amount),
+        trxId: trxId,
+        status: 'Pending',
+        date: new Date().toLocaleString()
       };
 
-      const res = await apiCall('/api/wallet/add-balance', 'POST', payload);
-      alert(res.message);
-    });
+      // লোকালস্টোরেজে রিকোয়েস্ট সেভ করা যাতে অ্যাডমিন প্যানেল দেখতে পায়
+      let requests = JSON.parse(localStorage.getItem('balanceRequests')) || [];
+      requests.push(requestData);
+      localStorage.setItem('balanceRequests', JSON.stringify(requests));
+
+      alert('আপনার ব্যালেন্স রিচার্জ রিকোয়েস্ট সফলভাবে জমা দেওয়া হয়েছে!');
+      document.getElementById('addBalanceForm').reset();
+      
+      // রিসেট হওয়ার পরেও আইডি আবার বসিয়ে দেওয়া
+      if(user) {
+        document.getElementById('resellerIdInput').value = user.resellerId || user.phone || user.mobile || '';
+      }
+    }
   </script>
+
 </body>
 </html>

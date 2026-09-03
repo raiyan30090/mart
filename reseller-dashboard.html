@@ -2,43 +2,216 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <title>Reseller Dashboard - Mart Express BD</title>
+  <title>রিসেলার ড্যাশবোর্ড - Mart Express BD</title>
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding-bottom: 70px;
+    }
+    .top-navbar {
+      background-color: #006a4e;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .top-navbar h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+    .balance-btn {
+      background-color: white;
+      color: #006a4e;
+      padding: 6px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      text-decoration: none;
+      font-size: 14px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .welcome-card {
+      background: white;
+      margin: 15px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .welcome-card h3 {
+      margin: 0 0 5px 0;
+      color: #333;
+    }
+    .welcome-card p {
+      margin: 0;
+      color: #777;
+      font-size: 14px;
+    }
+    .section-container {
+      background: white;
+      margin: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 15px;
+      border-left: 4px solid #006a4e;
+      padding-left: 8px;
+    }
+    /* ফিক্সড গ্রিড লেআউট যাতে বাটনগুলো কাজ করে */
+    .grid-menu {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+    @media (max-width: 768px) {
+      .grid-menu {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    .menu-item {
+      background: #fdfdfd;
+      border: 1px solid #e0e0e0;
+      padding: 20px 10px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #333;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .menu-item:hover {
+      background: #f0f9f6;
+      border-color: #006a4e;
+      transform: translateY(-2px);
+    }
+    .menu-item span {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .menu-icon {
+      font-size: 28px;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #006a4e;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    .bottom-nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 12px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+  </style>
 </head>
 <body>
 
-  <nav class="navbar">
-    <h2>👨‍💻 Reseller Panel</h2>
-    <div>
-      <a href="../index.html">Shop</a>
-      <a href="./reseller-add-balance.html">Add Balance</a>
-    </div>
-  </nav>
+  <!-- টপ হেডার -->
+  <div class="top-navbar">
+    <h2>⚡ Mart Express BD</h2>
+    <a href="reseller-add-balance.html" class="balance-btn" id="resellerBalanceBtn">৳ 0.00 ব্যালেন্স</a>
+  </div>
 
-  <div class="container">
-    <div class="card">
-      <h3 id="resellerWelcome">Welcome, Reseller</h3>
-      <p id="resellerIdDisplay" style="color:#777; margin-top:5px;"></p>
-    </div>
+  <!-- ওয়েলকাম কার্ড -->
+  <div class="welcome-card">
+    <h3 id="resellerWelcome">স্বাগতম, রিসেলার</h3>
+    <p id="resellerIdDisplay">আইডি: লোড হচ্ছে...</p>
+  </div>
 
-    <div class="grid">
-      <div class="card">
-        <div class="card-title">Available Balance</div>
-        <div class="card-value">৳0.00</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Total Earned</div>
-        <div class="card-value">৳0.00</div>
-      </div>
+  <!-- ড্যাশবোর্ড অপশনস / মেনু -->
+  <div class="section-container">
+    <div class="section-title">রিসেলার প্যানেল মেনু</div>
+    <div class="grid-menu">
+      <a href="all-products.html" class="menu-item">
+        <div class="menu-icon">🛍️</div>
+        <span>সকল প্রোডাক্ট</span>
+      </a>
+      <a href="reseller-add-balance.html" class="menu-item">
+        <div class="menu-icon">➕</div>
+        <span>ব্যালেন্স অ্যাড</span>
+      </a>
+      <a href="orders.html" class="menu-item">
+        <div class="menu-icon">📦</div>
+        <span>অর্ডার লিস্ট</span>
+      </a>
+      <a href="wallet.html" class="menu-item">
+        <div class="menu-icon">👛</div>
+        <span>ওয়ালেট</span>
+      </a>
     </div>
   </div>
 
+  <!-- নিচের ফিক্সড ন্যাভবার -->
+  <div class="bottom-nav">
+    <a href="../index.html">
+      <span>🏠</span>
+      <span>হোম</span>
+    </a>
+    <a href="../index.html">
+      <span>🔍</span>
+      <span>সার্চ</span>
+    </a>
+    <a href="all-products.html">
+      <span>🛒</span>
+      <span>শপ</span>
+    </a>
+    <a href="#" onclick="localStorage.removeItem('user'); localStorage.removeItem('loggedReseller'); window.location.href='../index.html';">
+      <span>🚪</span>
+      <span>লগআউট</span>
+    </a>
+  </div>
+
   <script>
-    const user = JSON.parse(localStorage.getItem('user'));
+    // ইউজারের ডাটা লোড করা
+    const user = JSON.parse(localStorage.getItem('user')) || JSON.parse(localStorage.getItem('loggedReseller')) || JSON.parse(localStorage.getItem('currentReseller'));
+    
     if(user) {
-      document.getElementById('resellerWelcome').innerText = `Welcome, ${user.name}`;
-      document.getElementById('resellerIdDisplay').innerText = `ID: ${user.resellerId}`;
+      document.getElementById('resellerWelcome').innerText = `স্বাগতম, ${user.name}`;
+      document.getElementById('resellerIdDisplay').innerText = `আইডি / ফোন: ${user.resellerId || user.phone || user.mobile}`;
     }
+
+    // ব্যালেন্স রিয়েল-টাইম আপডেট করার ফাংশন
+    function loadResellerBalance() {
+      if(!user) return;
+      let userPhone = user.phone || user.mobile || user.resellerId;
+
+      let resellers = JSON.parse(localStorage.getItem('resellerBalances')) || [];
+      let currentReseller = resellers.find(r => r.phone === userPhone || r.mobile === userPhone || r.id === userPhone);
+
+      let balanceBtn = document.getElementById('resellerBalanceBtn');
+
+      if(currentReseller && balanceBtn) {
+        balanceBtn.innerText = `৳ ${parseFloat(currentReseller.balance).toFixed(2)} ব্যালেন্স`;
+      } else if(user && user.balance !== undefined && balanceBtn) {
+        balanceBtn.innerText = `৳ ${parseFloat(user.balance).toFixed(2)} ব্যালেন্স`;
+      }
+    }
+
+    loadResellerBalance();
+    setInterval(loadResellerBalance, 2000);
   </script>
 </body>
 </html>
