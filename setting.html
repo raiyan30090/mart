@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mart Express BD - Reseller Settings</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: #006a4e;
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 500px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #006a4e;
+            margin-bottom: 15px;
+        }
+        .upload-btn {
+            background: #006a4e;
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            transition: 0.2s;
+        }
+        .upload-btn:hover {
+            background: #00523d;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- হেডার -->
+    <div class="header">
+        <a href="reseller-dashboard.html">← পেছনের যান</a>
+        <h3 style="margin:0;">রিসেলার সেটিংস</h3>
+    </div>
+
+    <!-- মূল কন্টেন্ট -->
+    <div class="container">
+        <h3>প্রোফাইল ছবি পরিবর্তন</h3>
+        <p style="color: #666; font-size: 13px;">আপনার পছন্দমতো প্রোফাইল পিকচার আপলোড করুন</p>
+        
+        <div style="margin: 20px 0;">
+            <img id="settings-profile-preview" src="https://via.placeholder.com/100" alt="Profile Preview" class="profile-img"><br>
+            
+            <input type="file" id="profile-img-input" accept="image/*" style="display: none;" onchange="previewAndSaveImage(event)">
+            <label for="profile-img-input" class="upload-btn">
+                📷 ছবি সিলেক্ট করুন
+            </label>
+        </div>
+    </div>
+
+    <script>
+        // পেজ লোড হওয়ার সময় বর্তমান ছবি দেখানোর জন্য
+        window.addEventListener('DOMContentLoaded', () => {
+            let loggedUser = JSON.parse(localStorage.getItem('loggedInReseller')) || {};
+            if (loggedUser.profilePic) {
+                document.getElementById('settings-profile-preview').src = loggedUser.profilePic;
+            }
+        });
+
+        // ছবি সিলেক্ট করার পর লোকালস্টোরেজে সেভ করার ফাংশন
+        function previewAndSaveImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Image = e.target.result;
+                    
+                    // প্রিভিউ আপডেট
+                    document.getElementById('settings-profile-preview').src = base64Image;
+
+                    // লোকালস্টোরেজে সেভ করা
+                    let loggedUser = JSON.parse(localStorage.getItem('loggedInReseller')) || {};
+                    loggedUser.profilePic = base64Image;
+                    localStorage.setItem('loggedInReseller', JSON.stringify(loggedUser));
+
+                    alert('প্রোফাইল ছবি সফলভাবে আপডেট হয়েছে! ✅');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>

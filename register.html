@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
@@ -135,6 +135,33 @@
             Already have an account? <a href="login.html">Login</a>
         </div>
     </div>
+    <script>
+        // কাস্টমার রেজিস্ট্রেশন ফর্ম সাবমিট ইভেন্ট
+document.getElementById('register-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    let name = document.getElementById('reg-name').value;
+    let phone = document.getElementById('reg-email').value; // বা ফোন ইনপুট আইডি
+    let password = document.getElementById('reg-password').value;
+
+    let newCustomer = {
+        name: name,
+        phone: phone,
+        password: password,
+        regDate: new Date().toLocaleString()
+    };
+
+    // লোকালস্টোরেজ থেকে আগের ডাটা ফেচ করা
+    let customers = JSON.parse(localStorage.getItem('customers')) || [];
+    customers.push(newCustomer);
+
+    // 'customers' নামে সেভ করা হচ্ছে
+    localStorage.setItem('customers', JSON.stringify(customers));
+
+    alert('রেজিস্ট্রেশন সফল হয়েছে!');
+    window.location.href = 'login.html'; // লগইন পেইজে রিডিক্ট
+});
+    </script>
 
 </body>
-</html>
+</html> -->

@@ -54,7 +54,7 @@
                         <th>বর্তমান স্ট্যাটাস ও পরিবর্তন করুন</th>
                     </tr>
                 </thead>
-                <tbody id="admin-withdraw-body">
+                <tbody id="admin-withdraw-tbody">
                     <!-- JavaScript দিয়ে ডায়নামিকভাবে লোড হবে -->
                 </tbody>
             </table>
@@ -68,35 +68,47 @@
 
         // অ্যাডমিন প্যানেলে টেবিল লোড করা
         function loadAdminWithdraws() {
-            const tbody = document.getElementById('admin-withdraw-body');
-            let history = JSON.parse(localStorage.getItem('withdrawHistory')) || [];
+    const tbody = document.getElementById('admin-withdraw-tbody');
+    let history = JSON.parse(localStorage.getItem('withdrawHistory')) || [];
 
-            if (history.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6b7280;">কোনো উইথড্র রিকোয়েস্ট পাওয়া যায়নি।</td></tr>`;
-                return;
-            }
+    if (!tbody) return;
 
-            tbody.innerHTML = '';
-            history.forEach((item, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${item.date}</td>
-                        <td><b>${item.resellerid || 'N/A'}</b></td>
-                        <td>${item.method}<br><small style="color:#6b7280">${item.number}</small></td>
-                        <td><b>৳ ${item.amount}</b></td>
-                        <td>
-                            <select class="status-select" onchange="updateStatus(${index}, this.value)">
-                                <option value="Waiting for Approved" ${item.status === 'Waiting for Approved' ? 'selected' : ''}>⏳ Waiting for Approved</option>
-                                <option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>🔄 Pending</option>
-                                <option value="Ready for Payment" ${item.status === 'Ready for Payment' ? 'selected' : ''}>📦 Ready for Payment</option>
-                                <option value="Payment Successful" ${item.status === 'Payment Successful' ? 'selected' : ''}>✅ Payment Successful</option>
-                            </select>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
+    if (history.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6b7280; padding: 20px;">কোনো উইথড্র রিকোয়েস্ট পাওয়া যায়নি।</td></tr>`;
+        return;
+    }
 
+    tbody.innerHTML = '';
+    
+    history.forEach((item, index) => {
+        let amount = parseFloat(item.amount) || 0;
+        let charge = item.charge || (amount * 0.02);
+        let netPayable = item.netPayable || (amount - charge);
+
+        tbody.innerHTML += `
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 12px; font-size: 12px; color: #666;">${item.date || ''}</td>
+                <td style="padding: 12px;"><b>${item.resellerid || item.resellerId || 'N/A'}</b></td>
+                <td style="padding: 12px;">${item.method || ''}<br><small style="color:#006a4e; font-weight:bold;">${item.number || item.account || ''}</small></td>
+                <td style="padding: 12px;">
+                    উইথড্র: ৳${amount}<br>
+                    <small style="color: #d9534f;">চার্জ (২%): ৳${charge.toFixed(2)}</small><br>
+                    <strong style="color: #28a745;">প্রাপ্য: ৳${netPayable.toFixed(2)}</strong>
+                </td>
+                <td style="padding: 12px;">
+                    <select class="status-select" onchange="updateStatus(${index}, this.value)" style="padding: 5px; border-radius: 4px;">
+                        <option value="Waiting for Approved" ${item.status === 'Waiting for Approved' ? 'selected' : ''}>⏳ Waiting for Approved</option>
+                        <option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>🔄 Pending</option>
+                        <option value="Ready for Payment" ${item.status === 'Ready for Payment' ? 'selected' : ''}>📦 Ready for Payment</option>
+                        <option value="Payment Successful" ${item.status === 'Payment Successful' ? 'selected' : ''}>✅ Payment Successful</option>
+                        <option value="Cancelled" ${item.status === 'Cancelled' ? 'selected' : ''}>❌ Cancelled</option>
+                        <option value="Failed" ${item.status === 'Failed' ? 'selected' : ''}>⚠️ Failed</option>
+                    </select>
+                </td>
+            </tr>
+        `;
+    });
+}
         // স্ট্যাটাস পরিবর্তন করে LocalStorage-এ আপডেট করা
         function updateStatus(index, newStatus) {
             let history = JSON.parse(localStorage.getItem('withdrawHistory')) || [];

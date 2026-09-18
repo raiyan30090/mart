@@ -72,10 +72,17 @@
                     <label for="withdraw-amount">উইথড্র পরিমাণ (৳)</label>
                     <input type="number" id="withdraw-amount" min="200" placeholder="সর্বনিম্ন ৳২০০" required>
                 </div>
+                <!-- উইথড্র ফর্মের মধ্যে টাকার ইনপুটের নিচে এটি বসিয়ে দিন -->
+<!-- উইথড্র ফরমের মধ্যে টাকার ইনপুটের নিচে এটি দিন -->
+    <div style="margin-top: 10px; font-size: 14px; background: #f9f9f9; padding: 10px; border-radius: 5px;">
+        <div style="color: #d9534f; margin-bottom: 5px;">২% গেটওয়ে চার্জ কাটা হবে: <span id="charge-text" style="font-weight: bold;">৳০</span></div>
+        <div style="color: #28a745;">আপনি পেমেন্ট পাবেন: <span id="net-text" style="font-weight: bold;">৳০</span></div>
+    </div>
 
                 <button type="submit"><i class="fa-solid fa-paper-plane"></i> রিকোয়েস্ট পাঠান</button>
             </form>
         </div>
+        
 
         <!-- Withdraw History Card -->
         <div class="page-card">
@@ -183,6 +190,45 @@
                 `;
             });
         }
+        const amountInput = document.getElementById('withdraw-amount');
+
+if (amountInput) {
+    amountInput.addEventListener('input', function() {
+        let amount = parseFloat(this.value) || 0;
+        let charge = amount * 0.02; // ২% চার্জ
+        let netPayable = amount - charge;
+
+        // শুধু নির্দিষ্ট আইডি দিয়ে মান আপডেট করা (পুরো পেজ মুছবে না)
+        let chargeView = document.getElementById('charge-text');
+        let netView = document.getElementById('net-text');
+
+        if (chargeView) chargeView.innerText = `৳${charge.toFixed(2)}`;
+        if (netView) netView.innerText = `৳${netPayable.toFixed(2)}`;
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInput = document.getElementById('withdraw-amount');
+    
+    if (amountInput) {
+        // ইনপুট দেওয়ার সাথে সাথে ক্যালকুলেট করার ফাংশন
+        amountInput.addEventListener('input', function() {
+            let amount = parseFloat(this.value) || 0;
+            let charge = amount * 0.02; // ২% চার্জ
+            let netPayable = amount - charge;
+
+            let chargeView = document.getElementById('charge-text');
+            let netView = document.getElementById('net-text');
+
+            if (chargeView) {
+                chargeView.innerText = `৳${charge.toFixed(2)}`;
+            }
+            if (netView) {
+                netView.innerText = `৳${netPayable.toFixed(2)}`;
+            }
+        });
+    }
+});
     </script>
 </body>
 </html>

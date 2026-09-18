@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কাস্টমার অর্ডার ম্যানেজমেন্ট</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'SolaimanLipi', sans-serif; background: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 1450px; margin: auto; }
+        .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .table-responsive { max-height: 600px; overflow-y: auto; margin-top: 15px; border: 1px solid #e2e8f0; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; white-space: nowrap; background: #fff; }
+        th, td { border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; padding: 10px 12px; text-align: left; font-size: 13px; vertical-align: middle; }
+        th { background: #f1f5f9; color: #334155; position: sticky; top: 0; z-index: 10; }
+        select, input[type="text"] { width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; background: #fff; }
+        .btn-save { background: #16a34a; color: white; border: none; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-save:hover { background: #15803d; }
+        .product-info { display: flex; align-items: center; gap: 10px; }
+        .product-img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; }
+    </style>
+</head>
+<body onload="loadCustomerOrders()">
+
+<div class="container">
+    <a href="admin.html" style="text-decoration:none; font-weight:bold; color:#0f172a;"><i class="fa-solid fa-arrow-left"></i> ড্যাশবোর্ডে ফিরুন</a>
+    <div class="card" style="margin-top: 15px;">
+        <h2><i class="fa-solid fa-bag-shopping" style="color: #2563eb;"></i> কাস্টমার অর্ডার ম্যানেজমেন্ট <span id="total-count" style="font-size: 14px; color: #64748b; font-weight: normal;"></span></h2>
+        
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>তারিখ ও সময়</th>
+                        <th>প্রোডাক্ট</th>
+                        <th>কাস্টমার নাম</th>
+                        <th>ফোন নম্বর</th>
+                        <th>ট্র্যাকিং আইডি</th>
+                        <th>পেমেন্ট ডিটেইলস</th>
+                        <th>স্ট্যাটাস পরিবর্তন</th>
+                        <th>ট্র্যাকিং লিংক</th>
+                        <th>কার্যক্রম</th>
+                    </tr>
+                </thead>
+                <tbody id="customer-orders-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadCustomerOrders() {
+        // localStorage থেকে চিরস্থায়ী ডাটা লোড করা
+        let orders = JSON.parse(localStorage.getItem('customerOrders')) || [];
+        
+        if(orders.length === 0) {
+            orders = [
+                { 
+                    dateTime: 'Aug 28, 2026, 02:10 PM', 
+                    productName: 'ব্রেসলেট ও ওয়াচ সেট', 
+                    productCode: '#MEBD-C201', 
+                    productImage: 'https://via.placeholder.com/40',
+                    customerName: 'সাজ্জাদ হোসেন', 
+                    customerPhone: '01712345678', 
+                    trackingNo: '388492011', 
+                    paymentMethod: 'নগদ',
+                    paymentNumber: '01811223344',
+                    trxId: 'TRX12345678',
+                    amount: '১,৮৫০ টাকা',
+                    statusText: 'Waiting for Approved', 
+                    courierLink: '' 
+                }
+            ];
+            localStorage.setItem('customerOrders', JSON.stringify(orders));
+        }
+
+        document.getElementById('total-count').innerText = `(মোট অর্ডার: ${orders.length}টি)`;
+        let tbody = document.getElementById('customer-orders-body');
+        tbody.innerHTML = '';
+
+        const statuses = [
+            "Waiting for Approved",
+            "Order Approved by Admin Team",
+            "Order Packaging",
+            "We sent to courier in your order",
+            "Order in courier",
+            "Parcel delivered",
+            "Parcel completed",
+            "Parcel returned",
+            "Customer call receive kore na",
+            "Customer phone bondho",
+            "Payment on hold",
+            "Waiting for delivery charge payment",
+            "Order completed",
+            "Order cancelled"
+        ];
+
+        orders.forEach((item, index) => {
+            let currentStatus = item.statusText || 'Waiting for Approved';
+            let optionsHtml = statuses.map(st => `<option value="${st}" ${currentStatus === st ? 'selected' : ''}>${st}</option>`).join('');
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${item.dateTime}</td>
+                    <td>
+                        <div class="product-info">
+                            <img src="${item.productImage || 'https://via.placeholder.com/40'}" class="product-img" alt="">
+                            <div>
+                                <div style="font-weight: 600;">${item.productName}</div>
+                                <div style="font-size: 11px; color: #64748b;">${item.productCode}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${item.customerName}</td>
+                    <td>${item.customerPhone}</td>
+                    <td><b style="color: #0284c7;">${item.trackingNo}</b></td>
+                    <td style="font-size: 12px; background: #f8fafc;">
+                        <b>মাধ্যম:</b> ${item.paymentMethod || 'ন/এ'}<br>
+                        <b>নম্বর:</b> ${item.paymentNumber || 'ন/এ'}<br>
+                        <b>ট্রানজেকশন:</b> ${item.trxId || 'ন/এ'}<br>
+                        <b>টাকা:</b> <span style="color: #16a34a; font-weight: bold;">${item.amount || '০ টাকা'}</span>
+                    </td>
+                    <td>
+                        <select id="cust-status-${index}">
+                            ${optionsHtml}
+                        </select>
+                    </td>
+                    <td><input type="text" id="cust-link-${index}" value="${item.courierLink || ''}" placeholder="ট্র্যাকিং লিংক..."></td>
+                    <td><button class="btn-save" onclick="updateCustomer(${index})"><i class="fa-solid fa-floppy-disk"></i> আপডেট</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    function updateCustomer(index) {
+        let orders = JSON.parse(localStorage.getItem('customerOrders')) || [];
+        orders[index].statusText = document.getElementById(`cust-status-${index}`).value;
+        orders[index].courierLink = document.getElementById(`cust-link-${index}`).value;
+        localStorage.setItem('customerOrders', JSON.stringify(orders));
+        alert('কাস্টমার অর্ডার সফলভাবে পার্মানেন্টলি সেভ ও আপডেট করা হয়েছে!');
+        loadCustomerOrders();
+    }
+</script>
+</body>
+</html>

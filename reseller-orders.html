@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>রিসেলার অর্ডার ম্যানেজমেন্ট</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'SolaimanLipi', sans-serif; background: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 1700px; margin: auto; }
+        .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h2 { font-size: 20px; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 8px; }
+        
+        .table-responsive { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; white-space: nowrap; background: #fff; }
+        th, td { border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; padding: 12px 15px; text-align: left; font-size: 13px; vertical-align: middle; }
+        th:last-child, td:last-child { border-right: none; }
+        th { background: #f8fafc; color: #475569; font-weight: 600; }
+        
+        select, input[type="text"] { width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; outline: none; margin-bottom: 5px; }
+        select:focus, input[type="text"]:focus { border-color: #2563eb; }
+        
+        .badge { background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 11px; display: inline-block; }
+        .product-info { display: flex; align-items: center; gap: 10px; }
+        .product-img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; }
+        
+        .copy-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 6px; min-width: 250px; font-size: 12px; line-height: 1.6; }
+        .copy-btn { background: none; border: none; color: #2563eb; cursor: pointer; padding: 0; font-size: 11px; float: right; font-weight: bold; }
+        .copy-btn:hover { text-decoration: underline; }
+        
+        .invoice-btn { background: #2563eb; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-family: 'SolaimanLipi', sans-serif; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+        .invoice-btn:hover { background: #1d4ed8; }
+
+        .btn-save { background: #16a34a; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; justify-content: center; width: 100%; }
+        .btn-save:hover { background: #15803d; }
+
+        /* Modal Styles */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #0f172a; color: #f8fafc; border: 1px solid #334155; padding: 20px; border-radius: 12px; width: 380px; position: relative; font-size: 13px; line-height: 1.6; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eab308; padding-bottom: 8px; margin-bottom: 12px; }
+        .invoice-title { color: #38bdf8; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+        .modal-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px dashed #475569; padding-top: 12px; }
+        .download-icon-btn { background: #38bdf8; color: #0f172a; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; }
+        .download-icon-btn:hover { background: #0ea5e9; }
+        .close-modal-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .close-modal-btn:hover { background: #dc2626; }
+        .invoice-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .invoice-hr { border: 0; border-top: 1px dashed #475569; margin: 8px 0; }
+    </style>
+</head>
+<body onload="loadResellerOrders()">
+
+<div class="container">
+    <a href="admin.html" style="text-decoration:none; font-weight:bold; color:#0f172a; display:inline-block; margin-bottom:15px;"><i class="fa-solid fa-arrow-left"></i> ড্যাশবোর্ডে ফিরুন</a>
+    
+    <div class="card">
+        <div class="header-flex">
+            <h2><i class="fa-solid fa-box-archive" style="color: #2563eb;"></i> রিসেলার অর্ডার ম্যানেজমেন্ট <span id="total-count" style="font-size: 14px; color: #64748b; font-weight: normal; margin-left: 5px;"></span></h2>
+        </div>
+        
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>তারিখ ও সময়</th>
+                        <th>প্রোডাক্ট</th>
+                        <th>কাস্টমার তথ্য</th>
+                        <th>রিসেলার আইডি</th>
+                        <th>পেমেন্ট ডিটেইলস</th>
+                        <th>ইনভয়েসসমূহ</th>
+                        <th>স্ট্যাটাস পরিবর্তন</th>
+                        <th>ট্র্যাকিং লিংক</th>
+                    </tr>
+                </thead>
+                <tbody id="reseller-orders-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Invoice Modal -->
+<div class="modal-overlay" id="invoiceModal">
+    <div class="modal-content" id="printableInvoice">
+        <div class="modal-header">
+            <div class="invoice-title"><i class="fa-solid fa-file-invoice"></i> Order Invoice Summary</div>
+        </div>
+        <div id="modalBodyContent"></div>
+        <div class="modal-actions">
+            <button class="download-icon-btn" onclick="downloadInvoice()"><i class="fa-solid fa-download"></i> ডাউনলোড</button>
+            <button class="close-modal-btn" onclick="closeModal()">বন্ধ করুন</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyText(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            alert('সফলভাবে কপি হয়েছে: ' + text);
+        });
+    }
+
+    function loadResellerOrders() {
+        var orders = JSON.parse(localStorage.getItem('myOrders')) || [];
+        
+        if(orders.length === 0) {
+            orders = [
+                { 
+                    dateTime: 'Aug 27, 2026, 06:45 PM', 
+                    productName: 'স্মার্টফোন Z1', 
+                    productCode: '#MEBD-P1024', 
+                    productImage: 'https://via.placeholder.com/40',
+                    customerName: 'রহিম উদ্দিন', 
+                    customerPhone: '01711223344',
+                    customerAddress: 'হাউস নং ৩৮/১, শেকেরটেক রোড ০২',
+                    customerThana: 'মোহাম্মদপুর',
+                    customerDistrict: 'ঢাকা',
+                    resellerId: 'MX-88402', 
+                    paymentMethod: 'বিকাশ',
+                    paymentNumber: '01711223344',
+                    trxId: 'TRX98765432',
+                    amount: '৬৫০ টাকা',
+                    resellerCommission: '১৯০ টাকা',
+                    paidAmount: '০ টাকা',
+                    dueAmount: '৬৫০ টাকা',
+                    gateway: 'bKash',
+                    adminPrice: '460 Tk',
+                    resellerSell: '650 Tk',
+                    deliveryCharge: '150 Tk',
+                    resellerProfit: '190 Tk',
+                    paidAmountInvoice: '0 Tk (Unpaid)',
+                    totalDue: '650 Tk',
+                    totalBill: '800 Tk',
+                    statusText: 'Waiting for Approved', 
+                    courierLink: '' 
+                }
+            ];
+            localStorage.setItem('myOrders', JSON.stringify(orders));
+        }
+
+        document.getElementById('total-count').innerText = '(মোট অর্ডার: ' + orders.length + 'টি)';
+        var tbody = document.getElementById('reseller-orders-body');
+        tbody.innerHTML = '';
+        
+        var statuses = [
+            "Waiting for Approved", "Order Approved by Admin Team", "Order Packaging",
+            "We sent to courier in your order", "Order in courier", "Parcel delivered",
+            "Parcel completed", "Parcel returned", "Customer call receive kore na",
+            "Customer phone bondho", "Payment on hold", "Waiting for delivery charge payment",
+            "Order completed", "Order cancelled"
+        ];
+
+        for(var i = 0; i < orders.length; i++) {
+            var item = orders[i];
+            var currentStatus = item.statusText || 'Waiting for Approved';
+            
+            var optionsHtml = '';
+            for(var j = 0; j < statuses.length; j++) {
+                var st = statuses[j];
+                var selected = (currentStatus === st) ? 'selected' : '';
+                optionsHtml += '<option value="' + st + '" ' + selected + '>' + st + '</option>';
+            }
+
+            var tr = document.createElement('tr');
+            tr.innerHTML = 
+                '<td style="color: #475569;">' + item.dateTime + '</td>' +
+                '<td>' +
+                    '<div class="product-info">' +
+                        '<img src="' + (item.productImage || 'https://via.placeholder.com/40') + '" class="product-img">' +
+                        '<div>' +
+                            '<div style="font-weight: 600; color: #1e293b;">' + item.productName + '</div>' +
+                            '<div style="font-size: 11px; color: #64748b;">' + item.productCode + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</td>' +
+                '<td>' +
+                    '<div class="copy-box" style="min-width: 220px;">' +
+                        '<div><b>নাম:</b> ' + (item.customerName || 'ন/এ') + '</div>' +
+                        '<div><b>ফোন:</b> ' + (item.customerPhone || 'ন/এ') + ' <button class="copy-btn" onclick="copyText(\'' + (item.customerPhone || '') + '\')">কপি</button></div>' +
+                        '<div><b>ঠিকানা:</b> ' + (item.customerAddress || 'ন/এ') + '</div>' +
+                        '<div><b>থানা/জেলা:</b> ' + (item.customerThana || '') + ', ' + (item.customerDistrict || '') + '</div>' +
+                    '</div>' +
+                '</td>' +
+                '<td>' +
+                    '<span class="badge">' + item.resellerId + '</span>' +
+                    '<button class="copy-btn" onclick="copyText(\'' + item.resellerId + '\')">কপি</button>' +
+                '</td>' +
+                '<td>' +
+                    '<div class="copy-box">' +
+                        '<div><b>মাধ্যম:</b> ' + (item.paymentMethod || 'ন/এ') + '</div>' +
+                        '<div><b>নম্বর:</b> ' + (item.paymentNumber || 'ন/এ') + ' <button class="copy-btn" onclick="copyText(\'' + (item.paymentNumber || '') + '\')">কপি</button></div>' +
+                        '<div><b>ট্রানজেকশন আইডি:</b> <span style="font-family:monospace; color:#2563eb;">' + (item.trxId || 'ন/এ') + '</span> <button class="copy-btn" onclick="copyText(\'' + (item.trxId || '') + '\')">কপি</button></div>' +
+                        '<hr style="border:0; border-top:1px dashed #cbd5e1; margin:4px 0;">' +
+                        '<div><b>মোট বিল:</b> <span style="color: #16a34a; font-weight: bold;">' + (item.amount || '০ টাকা') + '</span></div>' +
+                        '<div><b>রিসেলার প্রফিট:</b> <span style="color: #0284c7; font-weight: bold;">' + (item.resellerCommission || '১৯০ টাকা') + '</span></div>' +
+                    '</div>' +
+                '</td>' +
+                '<td>' +
+                    '<button class="invoice-btn" onclick="openInvoiceModal(' + i + ')"><i class="fa-solid fa-file-lines"></i> ইনভয়েস দেখুন</button>' +
+                '</td>' +
+                '<td><select id="res-status-' + i + '">' + optionsHtml + '</select></td>' +
+                '<td>' +
+                    '<input type="text" id="res-link-' + i + '" value="' + (item.courierLink || '') + '" placeholder="ট্র্যাকিং লিংক...">' +
+                    '<button class="btn-save" onclick="updateOrder(' + i + ')"><i class="fa-solid fa-floppy-disk"></i> আপডেট</button>' +
+                '</td>';
+            tbody.appendChild(tr);
+        }
+    }
+
+    function openInvoiceModal(index) {
+        var orders = JSON.parse(localStorage.getItem('myOrders')) || [];
+        var item = orders[index];
+        
+        var html = 
+            '<div class="invoice-row"><span>Selected Gateway:</span> <span><b>' + (item.gateway || 'bKash') + '</b></span></div>' +
+            '<div class="invoice-row"><span>Admin Price :</span> <span><b>' + (item.adminPrice || '460 Tk') + '</b></span></div>' +
+            '<div class="invoice-row"><span>Reseller Sell / Couriar Condition :</span> <span><b>' + (item.resellerSell || '650 Tk') + '</b></span></div>' +
+            '<div class="invoice-row"><span>Delivery Charge :</span> <span><b>' + (item.deliveryCharge || '150 Tk') + '</b></span></div>' +
+            '<div class="invoice-row" style="color: #4ade80;"><span>Reseller Profit :</span> <span><b>' + (item.resellerProfit || '190 Tk') + '</b></span></div>' +
+            '<div class="invoice-row"><span>Paid Amount (Advance Delivery Charge):</span> <span><b style="color: #f87171;">' + (item.paidAmountInvoice || '0 Tk (Unpaid)') + '</b></span></div>' +
+            '<div class="invoice-row" style="color: #f87171;"><span>Total Due Amount (Product Taka):</span> <span><b>' + (item.totalDue || '650 Tk') + '</b></span></div>' +
+            '<hr class="invoice-hr">' +
+            '<div class="invoice-row" style="font-size: 14px;"><span>Total Bill:</span> <span style="color: #f87171; font-weight: bold;">' + (item.totalBill || '800 Tk') + '</span></div>' +
+            '<hr class="invoice-hr">' +
+            '<div style="font-size: 11px; color: #facc15; margin-top: 6px;">📌 নোট : বাকি টাকা অর্থাৎ due amount ' + (item.totalDue || '650 Tk') + ' রাইডার এর হাতে পরিশোধ করে পার্সেল রিসিভ করবেন ...!! 🚚 📦 💵</div>';
+
+        document.getElementById('modalBodyContent').innerHTML = html;
+        document.getElementById('invoiceModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('invoiceModal').style.display = 'none';
+    }
+
+    function downloadInvoice() {
+        var content = document.getElementById('printableInvoice').innerText;
+        var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'Order_Invoice_Summary.txt';
+        link.click();
+    }
+
+    function updateOrder(index) {
+        var orders = JSON.parse(localStorage.getItem('myOrders')) || [];
+        orders[index].statusText = document.getElementById('res-status-' + index).value;
+        orders[index].courierLink = document.getElementById('res-link-' + index).value;
+        localStorage.setItem('myOrders', JSON.stringify(orders));
+        alert('অর্ডার স্ট্যাটাস ও ট্র্যাকিং লিংক সফলভাবে আপডেট করা হয়েছে!');
+        loadResellerOrders();
+    }
+</script>
+</body>
+</html>

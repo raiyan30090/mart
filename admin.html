@@ -77,6 +77,9 @@
             <li><a href="#" onclick="switchTab(event, 'resellersSection')"><i class="fa-solid fa-users"></i> Resellers List</a></li>
             <li><a href="#" onclick="switchTab(event, 'balanceSection')"><i class="fa-solid fa-wallet"></i> Reseller Balance</a></li>
             <li><a href="#" onclick="switchTab(event, 'balanceRequestsSection')"><i class="fa-solid fa-credit-card"></i> ব্যালেন্স রিকোয়েস্ট</a></li>
+            <li><a href="admin-withdraw.html"><i class="fa-solid fa-wallet"></i> উইথড্র রিকোয়েস্ট</a></li>
+            <li><a href="reseller-orders.html"><i class="fa-solid fa-box-archive"></i> <span>রিসেলার অর্ডার</span></a></li>
+<li><a href="customer-orders.html"><i class="fa-solid fa-bag-shopping"></i> <span>কাস্টমার অর্ডার</span></a></li>
             <li><a href="index.html"><i class="fa-solid fa-store"></i> Visit Storefront</a></li>
         </ul>
     </div>
@@ -290,29 +293,42 @@
             </form>
         </div>
 
-        <!-- ক্যাটাগরি ম্যানেজমেন্ট সেকশন -->
-        <div id="categoriesSection" class="section-box">
-            <h3>Category Management</h3>
-            <div class="form-card" style="margin-top: 15px;">
-                <div class="form-group">
-                    <label>New Category Name <span>*</span></label>
-                    <input type="text" class="form-control" id="newCategoryName" placeholder="Enter category name">
-                </div>
-                <button type="button" class="btn-save" onclick="addNewCategory()">Add Category</button>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Category Name</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="categoryTableBody">
-                    <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">কোনো ক্যাটাগরি নেই।</td></tr>
-                </tbody>
-            </table>
+<!-- ক্যাটাগরি ম্যানেজমেন্ট সেকশন -->
+<div id="categoriesSection" class="section-box" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <h3>Category Management</h3>
+    
+    <!-- ক্যাটাগরি ফর্ম (নাম ও সরাসরি ছবি আপলোড) -->
+    <div class="form-card" style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end;">
+        <div class="form-group">
+            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">New Category Name <span>*</span></label>
+            <input type="text" class="form-control" id="newCategoryName" placeholder="Enter category name" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
         </div>
+        <div class="form-group">
+            <label style="display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold;">Category Picture (Upload Image)</label>
+            <input type="file" class="form-control" id="newCategoryImg" accept="image/*" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; background: #fafafa;">
+        </div>
+        <div>
+            <button type="button" class="btn-save" id="category-save-btn" onclick="saveCategory()" style="background: #5d3ebc; color: #fff; border: none; padding: 9px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Add Category</button>
+        </div>
+    </div>
+
+    <!-- ক্যাটাগরি টেবিল -->
+    <table style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 20px;">
+        <thead>
+            <tr style="border-bottom: 2px solid #eee; color: #666; font-size: 14px;">
+                <th style="padding: 10px;">ID</th>
+                <th style="padding: 10px;">Category Pic</th>
+                <th style="padding: 10px;">Category Name</th>
+                <th style="padding: 10px; text-align: right;">Action</th>
+            </tr>
+        </thead>
+        <tbody id="categoryTableBody">
+            <tr>
+                <td colspan="4" style="text-align: center; padding: 20px; color: var(--text-muted);">কোনো ক্যাটাগরি নেই।</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
         <!-- রিসেলার ব্যালেন্স ম্যানেজমেন্ট সেকশন -->
         <div id="balanceSection" class="section-box">
@@ -397,16 +413,118 @@
             document.getElementById('totalProductsCount').innerText = products.length;
         }
 
-        function addNewCategory() {
-            let catName = document.getElementById('newCategoryName').value.trim();
-            if(!catName) { alert('দয়া করে ক্যাটাগরি নাম লিখুন!'); return; }
-            let categories = JSON.parse(localStorage.getItem('storeCategories')) || [];
-            categories.push(catName);
-            localStorage.setItem('storeCategories', JSON.stringify(categories));
-            document.getElementById('newCategoryName').value = '';
-            loadCategories();
-            alert('ক্যাটাগরি সফলভাবে যোগ করা হয়েছে!');
+let editingCategoryId = null;
+
+function saveCategory() {
+    let nameInput = document.getElementById('newCategoryName');
+    let imgInput = document.getElementById('newCategoryImg');
+    let saveBtn = document.getElementById('category-save-btn');
+    
+    let name = nameInput.value.trim();
+    if (!name) {
+        alert("দয়া করে ক্যাটাগরির নাম লিখুন!");
+        return;
+    }
+
+    let categories = JSON.parse(localStorage.getItem('adminCategories')) || [];
+    let defaultImg = 'https://via.placeholder.com/40';
+
+    if (imgInput.files && imgInput.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function (e) {
+            let base64Image = e.target.result;
+            processCategorySave(name, base64Image, categories, nameInput, imgInput, saveBtn);
+        };
+        reader.readAsDataURL(imgInput.files[0]);
+    } else {
+        let existingImg = defaultImg;
+        if (editingCategoryId !== null) {
+            let cat = categories.find(c => c.id === editingCategoryId);
+            if (cat) existingImg = cat.image;
         }
+        processCategorySave(name, existingImg, categories, nameInput, imgInput, saveBtn);
+    }
+}
+
+function processCategorySave(name, image, categories, nameInput, imgInput, saveBtn) {
+    if (editingCategoryId !== null) {
+        let index = categories.findIndex(c => c.id === editingCategoryId);
+        if (index !== -1) {
+            categories[index].name = name;
+            categories[index].image = image;
+        }
+        editingCategoryId = null;
+        if(saveBtn) saveBtn.innerText = "Add Category";
+        alert("ক্যাটাগরি সফলভাবে আপডেট করা হয়েছে!");
+    } else {
+        let newCat = {
+            id: Date.now(),
+            name: name,
+            image: image
+        };
+        categories.push(newCat);
+        alert("নতুন ক্যাটাগরি সফলভাবে যোগ করা হয়েছে!");
+    }
+
+    localStorage.setItem('adminCategories', JSON.stringify(categories));
+    
+    nameInput.value = '';
+    imgInput.value = '';
+    loadCategories();
+}
+
+function loadCategories() {
+    let tbody = document.getElementById('categoryTableBody');
+    let categories = JSON.parse(localStorage.getItem('adminCategories')) || [];
+
+    if (!tbody) return;
+
+    if (categories.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: #888;">কোনো ক্যাটাগরি নেই।</td></tr>`;
+        return;
+    }
+
+    let html = '';
+    categories.forEach((cat, index) => {
+        html += `
+            <tr style="border-bottom: 1px solid #eee; font-size: 14px; align-items: center;">
+                <td style="padding: 10px;">${index + 1}</td>
+                <td style="padding: 10px;"><img src="${cat.image}" alt="Cat" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;"></td>
+                <td style="padding: 10px; font-weight: bold; color: #333;">${cat.name}</td>
+                <td style="padding: 10px; text-align: right;">
+                    <button onclick="editCategory(${cat.id})" style="background: #ffc107; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 5px;">Edit</button>
+                    <button onclick="deleteCategory(${cat.id})" style="background: #dc3545; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+}
+
+function editCategory(id) {
+    let categories = JSON.parse(localStorage.getItem('adminCategories')) || [];
+    let cat = categories.find(c => c.id === id);
+    if (cat) {
+        document.getElementById('newCategoryName').value = cat.name;
+        editingCategoryId = cat.id;
+        let saveBtn = document.getElementById('category-save-btn');
+        if(saveBtn) saveBtn.innerText = "Update Category";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+function deleteCategory(id) {
+    if (confirm("আপনি কি এই ক্যাটাগরি ডিলিট করতে চান?")) {
+        let categories = JSON.parse(localStorage.getItem('adminCategories')) || [];
+        categories = categories.filter(c => c.id !== id);
+        localStorage.setItem('adminCategories', JSON.stringify(categories));
+        loadCategories();
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    loadCategories();
+});
 
         function loadCategories() {
             let categories = JSON.parse(localStorage.getItem('storeCategories')) || [];
@@ -897,6 +1015,31 @@
       loadBalanceRequests();
       setInterval(loadBalanceRequests, 2000);
     });
+
+    document.getElementById('register-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    let name = document.getElementById('reg-name').value;
+    let email = document.getElementById('reg-email').value;
+    let password = document.getElementById('reg-password').value;
+    
+    let newUser = {
+        name: name,
+        phone: email, // অথবা ফোন নম্বর থাকলে তা দিবেন
+        password: password,
+        regDate: new Date().toLocaleString()
+    };
+
+    // লোকালস্টোরেজ থেকে আগের ডাটা আনা
+    let customers = JSON.parse(localStorage.getItem('customers')) || [];
+    customers.push(newUser);
+    
+    // কাস্টমার লিস্টে সেভ করা (এই নামটাই অ্যাডমিন প্যানেলে ব্যবহার করতে হবে)
+    localStorage.setItem('customers', JSON.stringify(customers));
+    
+    alert('রেজিস্ট্রেশন সফল হয়েছে!');
+    window.location.href = 'login.html';
+});
     </script>
 </body>
 </html>

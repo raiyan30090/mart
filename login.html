@@ -423,7 +423,7 @@
                 if(found) {
                     localStorage.setItem('currentReseller', JSON.stringify(found));
                     alert('স্বাগতম ' + found.name + '! সফলভাবে লগইন হয়েছে।');
-                    window.location.href = 'index.html';
+                    window.location.href = 'reseller-dashboard.html';
                 } else {
                     alert('আইডি বা পাসওয়ার্ড ভুল অথবা আপনার সাবস্ক্রিপশন অনুমোদিত হয়নি!');
                 }
@@ -441,6 +441,45 @@
                 }
             }
         }
+        // রেজিস্ট্রেশন বা সাইন-আপ করার লজিক
+function handleRegister(name, phone, password) {
+    let users = JSON.parse(localStorage.getItem('allRegisteredUsers')) || [];
+    
+    // চেক করা ইউজার আগে থেকেই আছে কিনা
+    let exists = users.find(u => u.phone === phone);
+    if(exists) {
+        alert('এই নম্বর দিয়ে ইতিমধ্যে অ্যাকাউন্ট খোলা আছে!');
+        return false;
+    }
+
+    let newUser = {
+        name: name,
+        phone: phone,
+        password: password,
+        regDate: new Date().toLocaleString() // রেজিস্ট্রেশনের তারিখ ও সময়
+    };
+
+    users.push(newUser);
+    // আজীবন বা দীর্ঘমেয়াদী সংরক্ষণের জন্য localStorage-এ সেভ করা হলো
+    localStorage.setItem('allRegisteredUsers', JSON.stringify(users));
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    
+    return true;
+}
+
+// লগইন করার লজিক
+function handleLogin(phone, password) {
+    let users = JSON.parse(localStorage.getItem('allRegisteredUsers')) || [];
+    let validUser = users.find(u => u.phone === phone && u.password === password);
+
+    if(validUser) {
+        localStorage.setItem('currentUser', JSON.stringify(validUser));
+        return true;
+    } else {
+        alert('নম্বর অথবা পাসওয়ার্ড ভুল আছে!');
+        return false;
+    }
+}
     </script>
 </body>
 </html>

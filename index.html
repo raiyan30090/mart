@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -19,12 +20,12 @@
                 Mart Express BD
             </div>
         </div>
-        
+       
         <!-- Interactive Balance Button -->
         <button class="balance-btn" onclick="toggleBalance()">
             <span id="balance-text">৳ ব্যালেন্স দেখুন</span> <i class="fa-regular fa-eye"></i>
         </button>
-        
+       
         <i class="fa-regular fa-bell notif-icon" onclick="openFeature('নোটিফিকেশন')"></i>
     </header>
 
@@ -188,7 +189,7 @@
             let balanceText = document.getElementById('balance-text');
             let currentReseller = JSON.parse(localStorage.getItem('currentReseller'));
             let balances = JSON.parse(localStorage.getItem('resellerBalances')) || [];
-            
+           
             let userBal = balances.find(b => b.phone === currentReseller.phone);
             let amount = userBal ? userBal.balance : 0;
 
